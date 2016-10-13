@@ -1,22 +1,35 @@
-<template>
+<template lang="html">
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
+    <cv-head></cv-head>
+    <main id="main">
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 
 <script>
+require("./assets/scss/normalize.scss");
+require("./assets/scss/common.scss");
+
 export default {
   data () {
-    return {
-      msg: 'Hello Vue!'
-    }
+    return {}
+  },
+  computed: {},
+  mounted () {},
+  methods: {},
+  components: {
+    "cv-head": require("./components/header.vue")
   }
 }
 </script>
 
 <style lang="sass">
-body {
-  font-family: Helvetica, sans-serif;
-}
+  #main{
+    width: 90%;
+    max-width: 1400px;
+    min-width: 960px;
+    margin: 15px auto;
+    min-height: 400px;
+  }
 </style>

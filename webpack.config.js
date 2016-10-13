@@ -1,5 +1,7 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path'),
+    webpack = require('webpack'),
+    ExtracTextPlugin = require("extract-text-webpack-plugin")
+
 
 module.exports = {
   entry: './src/main.js',
@@ -15,7 +17,7 @@ module.exports = {
     loaders: [
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue-loader'
       },
       {
         test: /\.js$/,
@@ -24,7 +26,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        loader: "style!css"
+        loader: ExtracTextPlugin.extract({
+          fallbackLoader: "style-loader",
+          loader: "css-loader?sourceMap"
+        })
+      },
+      {
+        test: /\.(sass|scss)$/,
+        loader: ExtracTextPlugin.extract({
+          fallbackLoader: "style-loader",
+          loader: "css-loader?sourceMap!sass-loader"
+        })
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -39,11 +51,16 @@ module.exports = {
       }
     ]
   },
-  resolve: {
-    alias: {
-      vue: 'vue/dist/vue.js'
-    }
-  },
+  plugins: [
+    new ExtracTextPlugin({
+      filename: "style.css",
+      allChunks: true,
+      disable: false
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery"
+    })
+  ],
   devServer: {
     historyApiFallback: true,
     noInfo: true
