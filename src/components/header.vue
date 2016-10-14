@@ -9,7 +9,7 @@
           <router-link :to="{name: 'index', query: {tab: 'all'}}" tag="li" class="nav-item"><a>首页</a></router-link>
           <router-link :to="{name: 'api'}" tag="li" class="nav-item" exact><a>API</a></router-link>
           <router-link :to="{name: 'about'}" tag="li" class="nav-item" exact><a>关于</a></router-link>
-          <router-link :to="{name: 'login'}" tag="li" class="nav-item" exact><a>登录</a></router-link>
+          <!-- <router-link :to="{name: 'login'}" tag="li" class="nav-item" exact><a>登录</a></router-link> -->
         </ul>
       </div>
     </div>
