@@ -1,7 +1,7 @@
 <template lang="html">
   <div v-show="showLoading" id="loading" class="loading">
       <div class="loading_inner">
-          <i class="loading_icon"></i>{{showTxt}}
+          <i class="loading_icon"></i>{{content || showTxt}}
       </div>
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
       "showTxt": "loading..."
     }
   },
-  props:["showLoading"],
+  props:["showLoading", "content"],
   computed: {},
   mounted () {},
   methods: {},

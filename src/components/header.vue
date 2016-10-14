@@ -6,7 +6,7 @@
           <img src="https://o4j806krb.qnssl.com/public/images/cnodejs_light.svg" alt="" />
         </a>
         <ul id="nav-menu">
-          <router-link :to="{name: 'index'}" tag="li" class="nav-item" exact><a>首页</a></router-link>
+          <router-link :to="{name: 'index', query: {tab: 'all'}}" tag="li" class="nav-item"><a>首页</a></router-link>
           <router-link :to="{name: 'api'}" tag="li" class="nav-item" exact><a>API</a></router-link>
           <router-link :to="{name: 'about'}" tag="li" class="nav-item" exact><a>关于</a></router-link>
           <router-link :to="{name: 'login'}" tag="li" class="nav-item" exact><a>登录</a></router-link>
@@ -19,7 +19,8 @@
 <script>
 export default {
     data() {
-        return {}
+        return {
+        }
     },
     computed: {},
     mounted() {},
@@ -36,7 +37,6 @@ export default {
     font-size: 13px;
     #navbar-inner {
         width: 100%;
-        min-width: 960px;
         max-width: 1400px;
         padding: 5px;
         margin: 0 auto;

@@ -17,7 +17,7 @@ module.exports = {
     loaders: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue'
       },
       {
         test: /\.js$/,
@@ -61,6 +61,9 @@ module.exports = {
       $: "jquery"
     })
   ],
+  resolve: {
+    vue: "vue/dist/vue.js"
+  },
   devServer: {
     historyApiFallback: true,
     noInfo: true

@@ -1,33 +1,33 @@
 <template lang="html">
   <div>
-    <div class="content" id="content">
-      <div class="panel" id="panel">
-        <nav id="index-nav">
-          <router-link :to="{name: 'index', query: {tab: 'all'}}" class="item" exact>全部</router-link>
-          <router-link :to="{name: 'index', query: {tab: 'good'}}" class="item" exact>精华</router-link>
-          <router-link :to="{name: 'index', query: {tab: 'share'}}" class="item" exact>分享</router-link>
-          <router-link :to="{name: 'index', query: {tab: 'ask'}}" class="item" exact>问答</router-link>
-          <router-link :to="{name: 'index', query: {tab: 'job'}}" class="item" exact>招聘</router-link>
-        </nav>
-        <section id="articles">
-          <article class="article" v-for="item in articles">
-            <router-link :to="{name: 'user', params: {id: item.author_id}}" class="creater-avatar avatar">
-              <img :src="item.author.avatar_url" alt="" />
-            </router-link>
-            <span class="count">
-                <span class="reply" v-text="item.reply_count"></span>
-                <span class="seperator">/</span>
-                <span class="visit" v-text="item.visit_count"></span>
-            </span>
-            <span class="type" v-text="item.top"></span>
-            <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
-            <span class="last-reply-time">{{ item.last_reply_at | getDateFromNow }}</span>
-          </article>
-        </section>
+      <cv-aside></cv-aside>
+      <div class="content" id="content">
+        <div class="panel" id="panel">
+          <nav id="index-nav">
+            <router-link :to="{name: 'index', query: {tab: 'all'}}" class="item" exact>全部</router-link>
+            <router-link :to="{name: 'index', query: {tab: 'good'}}" class="item" exact>精华</router-link>
+            <router-link :to="{name: 'index', query: {tab: 'share'}}" class="item" exact>分享</router-link>
+            <router-link :to="{name: 'index', query: {tab: 'ask'}}" class="item" exact>问答</router-link>
+            <router-link :to="{name: 'index', query: {tab: 'job'}}" class="item" exact>招聘</router-link>
+          </nav>
+          <section id="articles">
+            <article class="article" v-for="item in articles">
+              <router-link :to="{name: 'user', params: {id: item.author_id}}" class="creater-avatar avatar">
+                <img :src="item.author.avatar_url" alt="" />
+              </router-link>
+              <span class="count">
+                  <span class="reply" v-text="item.reply_count"></span>
+                  <span class="seperator">/</span>
+                  <span class="visit" v-text="item.visit_count"></span>
+              </span>
+              <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span>
+              <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
+              <span class="last-reply-time">{{ item.last_reply_at | getDateFromNow }}</span>
+            </article>
+          </section>
+        </div>
       </div>
-    </div>
-    <cv-aside></cv-aside>
-    <cv-loading :showLoading="showLoading"></cv-loading>
+    <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
   </div>
 </template>
 
@@ -42,11 +42,22 @@ export default {
         limit: 20,
         mdrender: true
       },
-      showLoading: false
+      loading: {
+        showLoading: false,
+        content: "loading...",
+        show () {
+          this.showLoading = true;
+        },
+        hide () {
+          this.showLoading = false;
+        }
+      }
     };
   },
-  computed: {},
+  computed: {
+  },
   created: function(){
+    sessionStorage.setItem("tab", this.queryData.tab);
   },
   watch: {
     "$route": "fetchTopics"
@@ -55,8 +66,8 @@ export default {
     this.fetchTopics();
   },
   methods: {
-    fetchTopics: function(){
-      this.showLoading = true;
+    fetchTopics () {
+      this.loading.show();
       let tab = this.$route.query.tab || "all";
       this.queryData.tab = tab;
       $.ajax({
@@ -64,18 +75,31 @@ export default {
         type: "GET",
         data: this.queryData
       }).done((data) => {
-        this.showLoading = false;
+        this.loading.hide();
         console.log(data);
         if(!data || !data.success){
           //TODO 错误抛出
           return;
         }
+        data.data.forEach((v, i) => {
+          v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
+        });
         this.articles = data.data;
       }).fail((error) => {
         this.showLoading = false;
         //TODO 错误抛出
       });
+    },
+    getTypeClass (top, good, tab) {
+      if(top || good){
+        return "hasColor";
+      }else if(!top && !good && !tab || (this.$route.query.tab === tab)){
+        return "hidden";
+      }else {
+        return "noColor";
+      }
     }
+
   },
   components: {
     "cv-loading": require("../components/loading.vue"),
@@ -136,6 +160,7 @@ export default {
             .seperator{
               color: #9e78c0;
               font-size: 10px;
+              margin: 0 -3px;
             }
             .reply{
               color: #9e78c0;
@@ -145,12 +170,21 @@ export default {
             }
           }
           .type{
-              background-color: #80bd01;
               padding: 2px 4px;
               border-radius: 3px;
               color: #fff;
               font-size: 12px;
               float: left;
+              &.hasColor{
+                background-color: #80bd01;
+              }
+              &.hidden{
+                display: none;
+              }
+              &.noColor{
+                background-color: #e5e5e5;
+                color: #999;
+              }
           }
           .title{
             max-width: 65%;

@@ -13,11 +13,13 @@ require("./assets/scss/common.scss");
 
 export default {
   data () {
-    return {}
+    return {
+    }
   },
   computed: {},
   mounted () {},
-  methods: {},
+  methods: {
+  },
   components: {
     "cv-head": require("./components/header.vue")
   }
@@ -25,11 +27,5 @@ export default {
 </script>
 
 <style lang="sass">
-  #main{
-    width: 90%;
-    max-width: 1400px;
-    min-width: 960px;
-    margin: 15px auto;
-    min-height: 400px;
-  }
+
 </style>

@@ -4,10 +4,15 @@ export default () => {
   return [
     {
       path: "/",
+      redirect: {name: "index", query: {tab: "all"}},
+    },
+    {
+      path: "/index",
       name: 'index',
       component: (resolve) => {
         require(["./pages/index.vue"], resolve);
-      }
+      },
+      alias: "/?tab=all",
     },
     {
       path: "/api",

@@ -3,18 +3,19 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import App from './App.vue';
+// import App from "./pages/index.vue";
 import element from "element-ui";
 import "element-ui/lib/theme-default/index.css";
 import routes from "./router.js";
 import filters from "./filters.js";
 
 Vue.config.devtools = true;
-Vue.use(VueRouter);
-Vue.use(element);
-
 Object.keys(filters).forEach((v, i) => {
   Vue.filter(v, filters[v]);
 });
+Vue.use(VueRouter);
+Vue.use(element);
+
 
 const router = new VueRouter({
   mode: "hash",
