@@ -1,5 +1,5 @@
 <template lang="html">
-  <div>
+  <!-- <div>
       <cv-aside></cv-aside>
       <div class="content" id="content">
         <div class="panel" id="panel">
@@ -28,186 +28,140 @@
         </div>
       </div>
     <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
-  </div>
+  </div> -->
+<div>
+
+  <el-row :gutter="20" id="container">
+    <el-col :span="16" id="content">
+      <div class="grid-content bg-purple">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix index-nav">
+            <el-menu id="navbar" theme="light" default-active="1" class="el-menu-demo" mode="horizontal" router>
+              <el-menu-item index="1" :route="{name: 'index', query: {tab: 'all'}}">全部</el-menu-item>
+              <el-menu-item index="2" :route="{name: 'index', query: {tab: 'good'}}">精华</el-menu-item>
+              <el-menu-item index="3" :route="{name: 'index', query: {tab: 'share'}}">分享</el-menu-item>
+              <el-menu-item index="4" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
+              <el-menu-item index="4" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
+            </el-menu>
+            <cv-loading :showLoading="loading.showLoading"></cv-loading>
+          </div>
+          <div v-for="o in 4" class="text item">
+            <article class="article" v-for="item in articles">
+              <router-link :to="{name: 'user', params: {id: item.author_id}}" class="creater-avatar avatar">
+                <img :src="item.author.avatar_url" alt="" />
+              </router-link>
+              <span class="count">
+                  <span class="reply" v-text="item.reply_count"></span>
+                  <span class="seperator">/</span>
+                  <span class="visit" v-text="item.visit_count"></span>
+              </span>
+              <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span>
+              <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
+              <span class="last-reply-time">{{ item.last_reply_at | getDateFromNow }}</span>
+            </article>
+          </div>
+        </el-card>
+      </div>
+    </el-col>
+    <el-col :span="8">
+      <div class="grid-content bg-purple">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span style="line-height: 36px;">卡片名称</span>
+            <el-button style="float: right;" type="primary">操作按钮</el-button>
+          </div>
+          <div v-for="o in 4" class="text item">
+            {{'列表内容 ' + o }}
+          </div>
+        </el-card>
+      </div>
+    </el-col>
+  </el-row>
+</div>
+
 </template>
 
 <script>
 export default {
-  data () {
-    return {
-      articles: [],
-      queryData: {
-        page: 1,
-        tab: "all",
-        limit: 20,
-        mdrender: true
-      },
-      loading: {
-        showLoading: false,
-        content: "loading...",
-        show () {
-          this.showLoading = true;
-        },
-        hide () {
-          this.showLoading = false;
-        }
-      }
-    };
-  },
-  computed: {
-  },
-  created: function(){
-    sessionStorage.setItem("tab", this.queryData.tab);
-  },
-  watch: {
-    "$route": "fetchTopics"
-  },
-  mounted () {
-    this.fetchTopics();
-  },
-  methods: {
-    fetchTopics () {
-      this.loading.show();
-      let tab = this.$route.query.tab || "all";
-      this.queryData.tab = tab;
-      $.ajax({
-        url: "https://cnodejs.org/api/v1/topics",
-        type: "GET",
-        data: this.queryData
-      }).done((data) => {
-        this.loading.hide();
-        console.log(data);
-        if(!data || !data.success){
-          //TODO 错误抛出
-          return;
-        }
-        data.data.forEach((v, i) => {
-          v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
-        });
-        this.articles = data.data;
-      }).fail((error) => {
-        this.showLoading = false;
-        //TODO 错误抛出
-      });
+    data() {
+        return {
+            articles: [],
+            queryData: {
+                page: 1,
+                tab: "all",
+                limit: 20,
+                mdrender: true
+            },
+            loading: {
+                showLoading: false,
+                show() {
+                    this.showLoading = true;
+                },
+                hide() {
+                    this.showLoading = false;
+                }
+            }
+        };
     },
-    getTypeClass (top, good, tab) {
-      if(top || good){
-        return "hasColor";
-      }else if(!top && !good && !tab || (this.$route.query.tab === tab)){
-        return "hidden";
-      }else {
-        return "noColor";
-      }
-    }
+    computed: {},
+    created: function() {
+        sessionStorage.setItem("tab", this.queryData.tab);
+    },
+    watch: {
+        "$route": "fetchTopics"
+    },
+    mounted() {
+        this.fetchTopics();
+    },
+    methods: {
+        fetchTopics() {
+            this.loading.show();
+            let tab = this.$route.query.tab || "all";
+            this.queryData.tab = tab;
+            $.ajax({
+                url: "https://cnodejs.org/api/v1/topics",
+                type: "GET",
+                data: this.queryData
+            }).done((data) => {
+                this.loading.hide();
+                console.log(data);
+                if (!data || !data.success) {
+                    //TODO 错误抛出
+                    return;
+                }
+                data.data.forEach((v, i) => {
+                    v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
+                });
+                this.articles = data.data;
+            }).fail((error) => {
+                this.showLoading = false;
+                //TODO 错误抛出
+            });
+        },
+        getTypeClass(top, good, tab) {
+            if (top || good) {
+                return "hasColor";
+            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+                return "hidden";
+            } else {
+                return "noColor";
+            }
+        }
 
-  },
-  components: {
-    "cv-loading": require("../components/loading.vue"),
-    "cv-aside": require("../components/aside.vue")
-  }
+    },
+    components: {
+        "cv-loading": require("../components/loading.vue"),
+        "cv-aside": require("../components/aside.vue")
+    }
 }
 </script>
 
 <style lang="sass">
   #content{
-    margin-right: 300px;
-    padding: 0;
-    #panel{
-      #index-nav{
-        padding: 10px;
-        background-color: #f6f6f6;
-        border-radius: 3px 3px 0 0;
-        .item{
-          text-decoration: none;
-          color: #80bd01;
-          margin: 0 10px;
-          &.router-link-active{
-            background-color: #80bd01;
-            color: #fff;
-            padding: 3px 4px;
-            border-radius: 3px;
-          }
-        }
-      }
-      #articles{
-        background-color: #fff;
-        .article{
-          padding: 10px;
-          height : 30px;
-          line-height: 30px;
-          border-bottom: 1px solid #f0f0f0;
-          position: relative;
-          display: block;
-          color: #333;
-          &:last-child{
-            border: none;
-          }
-          .avatar{
-            float: left;
-            img {
-              width: 30px;
-              height: 30px;
-              border-radius: 3px;
-              max-width: 100%;
-              vertical-align: middle;
-            }
-          }
-          .count{
-            width: 70px;
-            text-align: center;
-            display: inline-block;
-            float: left;
-            .seperator{
-              color: #9e78c0;
-              font-size: 10px;
-              margin: 0 -3px;
-            }
-            .reply{
-              color: #9e78c0;
-            }
-            .visit{
-              font-size: 10px;
-            }
-          }
-          .type{
-              padding: 2px 4px;
-              border-radius: 3px;
-              color: #fff;
-              font-size: 12px;
-              float: left;
-              &.hasColor{
-                background-color: #80bd01;
-              }
-              &.hidden{
-                display: none;
-              }
-              &.noColor{
-                background-color: #e5e5e5;
-                color: #999;
-              }
-          }
-          .title{
-            max-width: 65%;
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            float: left;
-            margin-left: 10px;
-            text-decoration: none;
-            color: #333;
-          }
-          .last-reply-time{
-            float: right;
-            position: absolute;
-            bottom: 0;
-            right: 10px;
-            font-size: .8em;
-            display: inline-block;
-            margin-left: 20px;
-            color: #777;
-          }
-        }
+    .el-card__header{
+      padding: 0;
+      background-color: #eff2f7;
+      .index-nav{
       }
     }
   }
