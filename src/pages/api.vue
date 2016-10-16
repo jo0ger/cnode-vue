@@ -1,5 +1,5 @@
 <template lang="html">
-
+  <cv-head></cv-head>
 </template>
 
 <script>
@@ -10,7 +10,9 @@ export default {
   computed: {},
   mounted () {},
   methods: {},
-  components: {}
+  components: {
+    "cv-head": require("../components/header.vue"),
+  }
 }
 </script>
 

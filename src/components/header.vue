@@ -19,10 +19,10 @@
       <img src="https://o4j806krb.qnssl.com/public/images/cnodejs_light.svg" alt="" />
     </a>
     <el-menu id="navbar" theme="dark" default-active="1" class="el-menu-demo" mode="horizontal" router>
-      <el-menu-item index="1" :route="{name: 'index', query: {tab: 'all'}}">首页</el-menu-item>
-      <el-menu-item index="2" :route="{name: 'api'}">API</el-menu-item>
-      <el-menu-item index="3" :route="{name: 'login'}">登录</el-menu-item>
-      <el-menu-item index="4" :route="{name: 'about'}">关于</el-menu-item>
+      <el-menu-item index="1" :route="{name: 'index', query: {tab: 'all'}}" data-type="index">首页</el-menu-item>
+      <el-menu-item index="2" :route="{name: 'api'}" data-type="api">API</el-menu-item>
+      <el-menu-item index="3" :route="{name: 'login'}" data-type="login">登录</el-menu-item>
+      <el-menu-item index="4" :route="{name: 'about'}" data-type="about">关于</el-menu-item>
     </el-menu>
   </header>
 </template>
@@ -34,6 +34,9 @@ export default {
         }
     },
     computed: {},
+    created () {
+      console.log(111);
+    },
     mounted() {},
     methods: {
     },

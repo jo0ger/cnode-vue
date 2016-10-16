@@ -1,9 +1,7 @@
 <template lang="html">
   <div id="app">
-    <cv-head></cv-head>
-    <main id="main">
+    <!-- <cv-head></cv-head> -->
       <router-view></router-view>
-    </main>
   </div>
 </template>
 
