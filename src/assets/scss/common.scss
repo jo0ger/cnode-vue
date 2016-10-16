@@ -13,3 +13,21 @@ body{
   margin: 15px auto;
   min-height: 400px;
 }
+
+.type {
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 12px;
+    float: left;
+    &.hasColor {
+        background-color: #80bd01;
+    }
+    &.hidden {
+        display: none;
+    }
+    &.noColor {
+        background-color: #e5e5e5;
+        color: #999;
+    }
+}

@@ -9,7 +9,8 @@
           <router-link :to="{name: 'index', query: {tab: 'all'}}" tag="li" class="nav-item"><a>首页</a></router-link>
           <router-link :to="{name: 'api'}" tag="li" class="nav-item" exact><a>API</a></router-link>
           <router-link :to="{name: 'about'}" tag="li" class="nav-item" exact><a>关于</a></router-link>
-          <router-link :to="{name: 'login'}" tag="li" class="nav-item" exact><a>登录</a></router-link>
+          <router-link :to="{name: 'login'}" tag="li" class="nav-item" v-if="!loginname" exact><a>登录</a></router-link>
+          <li class="nav-item" v-if="loginname" @click="logout"><a>退出</a></li>
         </ul>
       </div>
     </div>
@@ -20,11 +21,18 @@
 export default {
     data() {
         return {
+          loginname: localStorage.getItem("loginname") || ""
         }
     },
     computed: {},
     mounted() {},
     methods: {
+      logout () {
+        localStorage.removeItem("id");
+        localStorage.removeItem("loginname");
+        localStorage.removeItem("avatar");
+        window.location.reload();
+      }
     },
     components: {}
 }
@@ -36,10 +44,13 @@ export default {
     background: #444;
     font-size: 13px;
     #navbar-inner {
-        width: 100%;
-        max-width: 1400px;
-        padding: 5px;
-        margin: 0 auto;
+      background: 0 0;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+      width: 90%;
+      margin: auto;
+      padding: 5px;
         .container {
             width: 100%;
             clear: both;
@@ -68,6 +79,7 @@ export default {
                     a {
                       color: #fff;
                       text-decoration: none;
+                      cursor: pointer;
                     }
                     &.router-link-active{
                       a{

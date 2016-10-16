@@ -25,6 +25,19 @@ exports.getArticleType = (top, good, tab) => {
   }
 };
 
+exports.getTypeName  = (type) => {
+  let name = "未知";
+  if(type === "share")
+    name = "分享";
+  else if(type === "ask")
+    name = "问答";
+  else if(type === "job")
+    name = "招聘";
+  else if(type === "good")
+    name = "精华";
+  return name;
+};
+
 exports.getTypeClass = (top, good, tab) => {
   if(top || good){
     return "hasColor";

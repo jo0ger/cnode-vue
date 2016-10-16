@@ -1,22 +1,25 @@
 <template lang="html">
   <div>
-    <div class="content" id="content">
-      <div class="panel" id="panel">
-        <header id="index-nav">登录</header>
-        <main id="container">
-          <div class="input-area">
-            <el-form ref="form" label-width="80px" @submit.prevent="login">
-              <el-form-item label="token">
-                <el-input v-model="at" :maxlength="36" :minlength='36'></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click.native="login">登录</el-button>
-              </el-form-item>
-            </el-form>
+      <cv-head></cv-head>
+      <main id="main">
+        <div class="content" id="content">
+          <div class="panel" id="panel">
+            <header id="index-nav">登录</header>
+            <main id="container">
+              <div class="input-area">
+                <el-form ref="form" label-width="80px" @submit.prevent="login">
+                  <el-form-item label="token">
+                    <el-input v-model="at" :maxlength="36" :minlength='36'></el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button type="primary" @click.native="login">登录</el-button>
+                  </el-form-item>
+                </el-form>
+              </div>
+            </main>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      </main>
     <cv-alert :content="alert.content" :show="alert.show"></cv-alert>
     <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
   </div>
@@ -87,6 +90,7 @@ export default {
     }
   },
   components: {
+    "cv-head": require("../components/header.vue"),
     "cv-alert": require("../components/alert.vue"),
     "cv-loading": require("../components/loading.vue"),
   }

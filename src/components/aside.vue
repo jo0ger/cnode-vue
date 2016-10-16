@@ -32,7 +32,6 @@ export default {
     mounted() {},
     methods: {
       logout () {
-        console.log(111);
         localStorage.removeItem("id");
         localStorage.removeItem("loginname");
         localStorage.removeItem("avatar");
