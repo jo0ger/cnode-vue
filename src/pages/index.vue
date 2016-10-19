@@ -14,7 +14,7 @@
             </nav>
             <section id="articles">
               <article class="article" v-for="item in articles">
-                <router-link :to="{name: 'user', params: {id: item.author_id}}" class="creater-avatar avatar">
+                <router-link :to="{name: 'user', params: {loginname: item.author.loginname}}" class="creater-avatar avatar">
                   <img :src="item.author.avatar_url" alt="" />
                 </router-link>
                 <span class="count">

@@ -15,8 +15,8 @@ exports.formatDate = {
             month = d.getMonth() + 1,
             day = d.getDate(),
             hour = d.getHours(),
-            minute = d.getMinutes();
-        seconds = d.getSeconds();
+            minute = d.getMinutes(),
+            seconds = d.getSeconds();
 
 
         format = format.replace("yyyy", year)

@@ -5,14 +5,14 @@
     </header>
     <main id="aside-content" class="aside-content">
       <div class="user-area">
-        <router-link :to="{name:'user', params: {id: userid}}" class="avatar">
+        <router-link :to="{name:'user', params: {loginname: username}}" class="avatar">
           <img :src="avatar" alt="" />
         </router-link>
         <div class="right-wrap">
-          <router-link :to="{name:'user', params: {id: userid}}" class="name">
+          <router-link :to="{name:'user', params: {loginname: username}}" class="name">
             <span v-text="username"></span>
           </router-link>
-          <span class="score" v-if="author">积分：{{ author.score }}</span>
+          <span class="score" v-if="author.score" v-text="'积分：'+author.score"></span>
           <a href="javascript:" @click="logout" v-if="isIndex">退出</a>
         </div>
       </div>
@@ -30,9 +30,13 @@ export default {
     props: ["username", "avatar", "userid", "isIndex"],
     computed: {},
     created () {
+    },
+    mounted() {
         this.fetchUser();
     },
-    mounted() {},
+    watch: {
+        "username": "fetchUser"
+    },
     methods: {
         logout() {
             localStorage.removeItem("id");
@@ -44,6 +48,8 @@ export default {
             if(!this.username){
                 return;
             }
+            console.log(this.username);
+            console.log(this.avatar);
             $.ajax({
                 url: "https://cnodejs.org/api/v1/user/" + this.username,
                 dataType: "json",

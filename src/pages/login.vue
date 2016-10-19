@@ -77,6 +77,7 @@ export default {
         localStorage.loginname = data.loginname;
         localStorage.avatar = data.avatar_url;
         localStorage.id = data.id;
+        localStorage.at = this.at;
         self.alert.timeShow("登录成功", 2000, function() {
           //暂未想好怎么实现重定向到上一个页面，先回到首页，留坑
           this.$router.replace({name: "index", query: {tab: "all"}});
