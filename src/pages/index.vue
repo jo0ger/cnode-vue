@@ -2,7 +2,7 @@
   <div>
       <cv-head></cv-head>
       <main id="main">
-        <cv-aside></cv-aside>
+        <cv-aside :username="user.loginname" :avatar="user.avatar" :userid="user.id" :isIndex="true"></cv-aside>
         <div class="content" id="content">
           <div class="panel" id="panel">
             <nav id="index-nav">
@@ -54,6 +54,11 @@ export default {
                 hide() {
                     this.showLoading = false;
                 }
+            },
+            user:{
+                loginname: localStorage.getItem("loginname") || "",
+                avatar: localStorage.getItem("avatar") || "",
+                id: localStorage.getItem("id") || ""
             },
             scrollLock: false
         };
@@ -192,7 +197,7 @@ export default {
                         font-size: 10px;
                     }
                 }
-                
+
                 .title {
                     max-width: 65%;
                     display: inline-block;

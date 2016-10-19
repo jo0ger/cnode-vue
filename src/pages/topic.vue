@@ -2,6 +2,7 @@
   <div>
       <cv-head></cv-head>
       <main id="main">
+        <cv-aside :username="topic.author.loginname" :avatar="topic.author.avatar_url" :userid="topic.author_id"></cv-aside>
         <div class="content" id="content">
           <div class="panel" id="panel">
             <header id="topic-header">
@@ -33,7 +34,9 @@ export default {
   data () {
     return {
       topicId: this.$route.params.id || "",
-      topic: {},
+      topic: {
+          author: {} //去掉后会报错，不清楚为什么
+      },
       loading: {
         showLoading: false,
         content: "loading...",
@@ -83,6 +86,7 @@ export default {
   components: {
     "cv-head": require("../components/header.vue"),
     "cv-loading": require("../components/loading.vue"),
+    "cv-aside": require("../components/aside.vue")
   }
 }
 </script>

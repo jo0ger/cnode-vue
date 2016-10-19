@@ -70,7 +70,6 @@ export default {
         dataType: 'json',
         data: {accesstoken: self.at}
       }).done((data) => {
-        console.log(data);
         if(!data || !data.success){
           self.alert.timeShow("登录出错，请稍候再试！")
           return;
