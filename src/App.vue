@@ -1,10 +1,5 @@
 <template lang="html">
-  <div id="app">
-    <cv-head></cv-head>
-    <main id="main">
-      <router-view></router-view>
-    </main>
-  </div>
+  <router-view></router-view>
 </template>
 
 <script>
@@ -21,7 +16,6 @@ export default {
   methods: {
   },
   components: {
-    "cv-head": require("./components/header.vue")
   }
 }
 </script>
