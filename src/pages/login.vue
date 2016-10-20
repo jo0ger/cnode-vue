@@ -1,5 +1,7 @@
 <template lang="html">
-  <div>
+    <div id="container">
+    <cv-head></cv-head>
+    <main id="main">
     <div class="content" id="content">
       <div class="panel" id="panel">
         <header id="index-nav">登录</header>
@@ -17,99 +19,120 @@
         </main>
       </div>
     </div>
-    <cv-alert :content="alert.content" :show="alert.show"></cv-alert>
+</main>
     <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
-    return {
-      at: "",
-      alert: {
-        content: "loading...",
-        show: false,
-        timeShow (content, time, cb) {
-          var self = this;
-          self.content = content || "loading...";
-          self.show = true;
-          let timer = setTimeout(() => {
-            self.show = false;
-            cb && cb();
-          }, time || 2000)
-        },
-      },
-      loading: {
-        showLoading: false,
-        content: "loading...",
-        show () {
-          this.showLoading = true;
-        },
-        hide () {
-          this.showLoading = false;
+    data() {
+        return {
+            at: "",
+            alert: {
+                title: "",
+                type: "",
+                description: "",
+            },
+            loading: {
+                showLoading: false,
+                content: "loading...",
+                show() {
+                    this.showLoading = true;
+                },
+                hide() {
+                    this.showLoading = false;
+                }
+            }
         }
-      }
-    }
-  },
-  computed: {},
-  mounted () {},
-  methods: {
-    login () {
-      let self = this;
-      if(self.at === ''){
-        self.alert.timeShow("token格式错误", 2000);
-        return;
-      }
-      $.ajax({
-        type: "POST",
-        url:'https://cnodejs.org/api/v1/accesstoken',
-        dataType: 'json',
-        data: {accesstoken: self.at}
-      }).done((data) => {
-        console.log(data);
-        if(!data || !data.success){
-          self.alert.timeShow("登录出错，请稍候再试！")
-          return;
+    },
+    computed: {},
+    mounted() {},
+    methods: {
+        login() {
+            let self = this;
+            if (self.at === '') {
+                self.$message({
+                    showClose: true,
+                    message: "token格式错误",
+                    type: "error"
+                })
+                return;
+            }
+            this.loading.show();
+            $.ajax({
+                type: "POST",
+                url: 'https://cnodejs.org/api/v1/accesstoken',
+                dataType: 'json',
+                data: {
+                    accesstoken: self.at
+                }
+            }).done((data) => {
+                this.loading.hide();
+                if (!data || !data.success) {
+                    self.$message({
+                        showClose: true,
+                        message: "登录出错，请稍候再试！",
+                        type: "warning"
+                    })
+                    return;
+                }
+                localStorage.loginname = data.loginname;
+                localStorage.avatar = data.avatar_url;
+                localStorage.id = data.id;
+                self.$message({
+                    showClose: true,
+                    message: "登录成功",
+                    type: "success",
+                    onClose () {
+                        self.$router.replace({
+                            name: "index",
+                            query: {
+                                tab: "all"
+                            }
+                        });
+                    }
+                });
+            }).fail((error) => {
+                //TODO 错误抛出
+                this.loading.hide();
+                self.$message({
+                    showClose: true,
+                    message: "登录出错，请稍候再试！",
+                    type: "warning"
+                })
+            });
         }
-        localStorage.loginname = data.loginname;
-        localStorage.avatar = data.avatar_url;
-        localStorage.id = data.id;
-        self.alert.timeShow("登录成功", 2000, function() {
-          //暂未想好怎么实现重定向到上一个页面，先回到首页，留坑
-          this.$router.replace({name: "index", query: {tab: "all"}});
-          // this.$router.replace(decodeURIComponent(self.$route.query.redirect));
-        }.bind(self))
-      }).fail((error) => {
-        //TODO 错误抛出
-        self.alert.timeShow("登录出错，请稍候再试！")
-      });
+    },
+    components: {
+        "cv-head": require("../components/header.vue"),
+        "cv-loading": require("../components/loading.vue"),
     }
-  },
-  components: {
-    "cv-alert": require("../components/alert.vue"),
-    "cv-loading": require("../components/loading.vue"),
-  }
 }
 </script>
 
 <style lang="sass">
-  #content{
+#content {
     margin-right: 300px;
     padding: 0;
-    #panel{
-      #container{
-        background-color: #fff;
-        min-height: 400px;
-        position: relative;
-        padding: 24px;
-        .input-area{
-          position: relative;
-          text-align: center;
-          width: 50%;
-          margin-left: 25%;
+    #panel {
+        #index-nav {
+            padding: 10px;
+            background-color: #f6f6f6;
+            border-radius: 3px 3px 0 0;
         }
-      }
+        #container {
+            background-color: #fff;
+            min-height: 400px;
+            position: relative;
+            padding: 24px;
+            .input-area {
+                position: relative;
+                text-align: center;
+                width: 50%;
+                margin-left: 25%;
+            }
+        }
     }
-  }
+}
 </style>
