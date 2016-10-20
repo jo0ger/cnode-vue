@@ -23,16 +23,16 @@
               </section>
             </main>
           </div>
-          <div class="panel" id="reply-panel">
-              <section class="topic-reply">
-                  <header id="reply-header">
-                    <span v-text=" topic.reply_count + '条回复'"></span>
+          <div class="panel" id="comment-panel" v-if="topic.replies">
+              <section class="topic-comment">
+                  <header id="comment-header" class="panel-header">
+                    <span v-text=" topic.reply_count + '条回复'" v-if="topic.reply_count"></span>
                   </header>
-                  <main id="reply-content" class="comments">
+                  <main id="comment-content" class="comments content">
                       <article class="comment" v-for="comment in topic.replies">
                           <router-link :to="{name:'user', params: {loginname: comment.author.loginname}}" class="comment-img">
                             <img :src="comment.author.avatar_url" alt="" />
-                            <span v-text="comment.author.loginname" class="reply-username"></span>
+                            <span v-text="comment.author.loginname" class="comment-username"></span>
                           </router-link>
                           <div class="comment-body">
                             <div class="text markdown-body">
@@ -44,6 +44,22 @@
                   </main>
               </section>
           </div>
+
+          <div class="panel" id="reply-panel" v-if="topic.replies">
+              <section class="topic-reply">
+                  <header id="reply-header" class="panel-header">
+                      <span>添加回复</span>
+                  </header>
+                  <main id="reply-container">
+                      <textarea id="reply-content" rows="8" class="text"
+                          v-model="reply_content"
+                          placeholder='回复支持Markdown语法,请注意标记代码'>
+                      </textarea>
+                      <a href="javascript:" id="reply" @click="reply">回复</a>
+                  </main>
+              </section>
+          </div>
+
         </div>
       </main>
     <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
@@ -51,6 +67,9 @@
 </template>
 
 <script>
+let tool = require("../libs/tool"),
+    markdown = require("markdown").markdown;
+    console.log(markdown);
 export default {
   data () {
     return {
@@ -58,6 +77,7 @@ export default {
       topic: {
           author: {} //去掉后会报错，不清楚为什么
       },
+      reply_content: "",
       loading: {
         showLoading: false,
         content: "loading...",
@@ -67,7 +87,21 @@ export default {
         hide () {
           this.showLoading = false;
         }
-      }
+    },
+    alert: {
+      content: "loading...",
+      show: false,
+      timeShow (content, time, cb) {
+        var self = this;
+        self.content = content || "loading...";
+        self.show = true;
+        let timer = setTimeout(() => {
+          self.show = false;
+          cb && cb();
+        }, time || 2000)
+      },
+    },
+    authorTxt:'<br/><br/><a class="form" href="http://www.bubblypoker.com">from cnode-vue</a>',
     }
   },
   computed: {},
@@ -83,13 +117,11 @@ export default {
         dataType: "json",
       }).done((res) => {
         this.loading.hide();
-        console.log(res);
         if(!res || !res.success){
           return;
         }
         res.data.type = this.getTypeClass(res.data.top, res.data.good, res.data.tab);
         this.topic = res.data;
-        console.log(this.topic);
       })
       .fail((error) => {
 
@@ -101,6 +133,25 @@ export default {
         } else if (!top && !good) {
             return "hidden";
         }
+    },
+    reply (){
+        if(!this.reply_content){
+            this.alert.show("请填写回复！");
+            return;
+        }
+        let time = new Date(),
+            linkUsers = tool.linkUsers(this.reply_content),
+            html = markdown.toHTML(linkUsers) + this.authorTxt;
+            addHtml = $('<div class="markdown-text"></div>').append(html)[0].outerHTML;
+        $.ajax({
+            url: "" + this.topicId + "/replies",
+            accesstoken: sessionStorage.getItem("at"),
+            content: this.reply_content + this.authorTxt,
+        }).done((res) => {
+
+        }).fail(() => {
+
+        })
     }
   },
   components: {
@@ -127,7 +178,6 @@ export default {
           margin: 8px 0;
           display: inline-block;
           vertical-align: bottom;
-          width: 75%;
           line-height: 130%;
           .topic-header{
             font-size: 22px;
@@ -160,15 +210,15 @@ export default {
         border-radius: 0 0 3px 3px;
       }
     }
-    #reply-panel{
+    .panel-header{
+        color: #51585c;
+        border-radius: 3px 3px 0 0;
+        background-color: #f6f6f6;
+        padding: 10px;
+    }
+    .panel{
         margin-top: 20px;
-        #reply-header{
-            color: #51585c;
-            border-radius: 3px 3px 0 0;
-            background-color: #f6f6f6;
-            padding: 10px;
-        }
-        #reply-content{
+        #comment-content{
             padding: 10px;
             border-radius: 0 0 3px 3px;
             background-color: #f3eee9;
@@ -192,7 +242,7 @@ export default {
                         width: 50px;
                         height: 50px;
                     }
-                    .reply-username{
+                    .comment-username{
                         width: 60px;
                         height: 20px;
                         line-height: 20px;
@@ -281,5 +331,35 @@ export default {
        -moz-transform: rotate(45deg);
        -ms-transform: rotate(45deg);
        -o-transform: rotate(45deg);
+   }
+
+   .topic-reply{
+       #reply-container{
+           padding: 10px;
+           border-radius: 0 0 3px 3px;
+           background-color: #fff;
+           position: relative;
+           textarea{
+               display: block;
+                -webkit-box-flex: 1;
+                width: 100%;
+                border: 1px solid #d5dbdb;
+                background-color: #fff;
+                font-size: 14px;
+                color: #313131;
+                resize: none;
+           }
+           #reply{
+               display: block;
+               text-decoration: none;
+               color: #fff;
+               background-color: #08c;
+               padding: 10px 10px;
+               border-radius: 3px;
+               margin-top: 10px;
+               text-align: center;
+
+           }
+       }
    }
 </style>
