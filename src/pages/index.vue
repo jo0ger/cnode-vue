@@ -3,7 +3,7 @@
 <cv-head></cv-head>
 <main id="main">
     <el-row :gutter="20" id="container">
-        <el-col :span="16" id="content">
+        <el-col :span="18" id="content" :offset="3">
             <div class="grid-content bg-purple">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix index-nav">
@@ -16,9 +16,9 @@
                         </el-menu>
                         <cv-loading :showLoading="loading.showLoading"></cv-loading>
                     </div>
-                    <div v-for="o in 4" class="text item">
+                    <div class="text item article-list">
                         <article class="article" v-for="item in articles">
-                            <router-link :to="{name: 'user', params: {id: item.author_id}}" class="creater-avatar avatar">
+                            <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
                                 <img :src="item.author.avatar_url" alt="" />
                             </router-link>
                             <span class="count">
@@ -28,21 +28,8 @@
                             </span>
                             <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span>
                             <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
-                            <span class="last-reply-time">{{ item.last_reply_at | getDateFromNow }}</span>
+                            <span class="last-reply-time">发布于 {{ item.create_at | getDateFromNow }}</span>
                         </article>
-                    </div>
-                </el-card>
-            </div>
-        </el-col>
-        <el-col :span="8">
-            <div class="grid-content bg-purple">
-                <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <span style="line-height: 36px;">卡片名称</span>
-                        <el-button style="float: right;" type="primary">操作按钮</el-button>
-                    </div>
-                    <div v-for="o in 4" class="text item">
-                        {{'列表内容 ' + o }}
                     </div>
                 </el-card>
             </div>
@@ -149,7 +136,6 @@ export default {
     components: {
         "cv-head": require("../components/header.vue"),
         "cv-loading": require("../components/loading.vue"),
-        "cv-aside": require("../components/aside.vue")
     }
 }
 </script>

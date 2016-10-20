@@ -1,84 +1,55 @@
 <template lang="html">
-  <div id="aside" class="aside" v-if="loginname">
-    <header id='aside-header' class="aside-header">
-      <span>个人信息</span>
-    </header>
-    <main id="aside-content" class="aside-content">
-      <div class="user-area">
-        <router-link :to="{name:'user', params: {id: id}}" class="avatar">
-          <img :src="avatar" alt="" />
+
+  <el-card :body-style="{ padding: '0px' }" v-if="author.loginname">
+      <router-link :to="{name:'user', params: {name: author.loginname}}" class="avatar">
+        <img :src="author.avatar_url" alt="" class="img"/>
+      </router-link>
+      <div style="padding: 14px;">
+        <router-link :to="{name:'user', params: {name: author.loginname}}" class="name">
+          <span v-text="author.loginname"></span>
         </router-link>
-        <div class="right-wrap">
-          <router-link :to="{name:'user', params: {id: id}}" class="name">
-            <span v-text="loginname"></span>
-          </router-link>
-          <a href="javascript:" @click="logout">退出</a>
+        <div class="bottom clearfix">
+          <span class="score">积分：{{author.score}}</time>
         </div>
       </div>
-    </main>
-  </div>
+    </el-card>
 </template>
 
 <script>
 export default {
     data() {
         return {
-          loginname: localStorage.loginname || "",
-          avatar: localStorage.avatar || "",
-          id: localStorage.id || ''
+          author: {}
         }
     },
+    props: ["authorName"],
     computed: {},
+    created (){
+        this.fetchUserInfo();
+    },
     mounted() {},
     methods: {
-      logout () {
-        console.log(111);
-        localStorage.removeItem("id");
-        localStorage.removeItem("loginname");
-        localStorage.removeItem("avatar");
-        window.location.reload();
-      }
+        //获取用户信息
+        fetchUserInfo (){
+            let self = this;
+            $.ajax({
+                url: "https://cnodejs.org/api/v1/user/" + self.authorName,
+                type: "GET",
+            }).done((res) => {
+                if(!res || !res.success){
+                    //TODO 是否错误抛出  有待商榷
+                    return;
+                }
+                this.author = res.data;
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+            });
+        },
     },
     components: {}
 }
 </script>
 
 <style lang="sass">
-  #aside{
-    width: 290px;
-    font-size: 14px;
-    float: right;
-    #aside-header{
-      color: #51585c;
-      border-radius: 3px 3px 0 0;
-      background-color: #f6f6f6;
-      padding: 10px;
-    }
-    #aside-content{
-      padding: 10px;
-      border-radius: 0 0 3px 3px;
-      background-color: #fff;
-      .user-area{
-        width: 100%;
-        height: 50px;
-        .avatar{
-          width: 48px;
-          height: 48px;
-          display: block;
-          float: left;
-          img{
-            max-width: 100%;
-            max-height: 100%;
-          }
-        }
-        .right-wrap{
-          margin-left: 60px;
-          a{
-            text-decoration: none;
-            color: #778087;
-          }
-        }
-      }
-    }
-  }
+
 </style>

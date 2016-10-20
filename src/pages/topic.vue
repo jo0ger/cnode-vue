@@ -1,18 +1,195 @@
 <template lang="html">
+  <div id="container">
+  <cv-head></cv-head>
+  <main id="main">
+    <el-row :gutter="20">
+        <el-col :span="17" :offset="1" id="topic-detail">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <div class="topic-title">
+                            <el-tag type="success" class="tag">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
+                            <h1 v-text="topic.title" class="title"></h1>
+                        </div>
+                        <p class="topic-info">
+                            <span>发布于 {{topic.create_at | getDateFromNow}}</span>
+                            <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
+                            <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
+                            <span>{{topic.visit_count}} 次浏览</span>
+                            <span>来自 {{}}</span>
+                            <el-button class="collectBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
+                                <i :class="collectBtn[collectBtn.type]"></i>
+                                {{ topic.is_collect && '已' || ''}}收藏
+                            </el-button>
+                        </p>
+                    </div>
+                    <main class="markdown-body topic-content" v-html="topic.content">
 
+                    </main>
+                </el-card>
+            </div>
+        </el-col>
+        <el-col :span="5">
+            <div class="grid-content bg-purple">
+                <cv-aside :author-name="topic.author.loginname" v-if="topic.author"></cv-aside>
+            </div>
+        </el-col>
+    </el-row>
+    <cv-comment :comment-list="topic.replies" :comment-count="topic.reply_count"></cv-comment>
+    <cv-reply :topic-id="topic.id"></cv-reply>
+    <cv-loading :show-loading="loading.showLoading"></cv-loading>
+  </main>
 </template>
 
 <script>
 export default {
-  data () {
-    return {}
-  },
-  computed: {},
-  mounted () {},
-  methods: {},
-  components: {}
+    data() {
+        return {
+            topic: {
+                id: this.$route.params.id,
+            },
+            collectBtn: {
+                type: "off",
+                on: "el-icon-star-on",
+                off: "el-icon-star-off",
+                load: "el-icon-loading",
+                lock: false, //防止用户多次点击
+                switch (load) {
+                    this.type = load || "on";
+                }
+            },
+            user: {
+                accesstoken: localStorage.accesstoken || "",
+                loginname: localStorage.loginname || ""
+            },
+            loading: {
+                showLoading: false,
+                show() {
+                    this.showLoading = true;
+                },
+                hide() {
+                    this.showLoading = false;
+                }
+            },
+        }
+    },
+    computed: {},
+    created() {
+        this.fetchTopicData();
+    },
+    mounted() {},
+    methods: {
+        //获取主题详情
+        fetchTopicData() {
+            let self = this;
+            self.loading.show();
+            $.ajax({
+                url: "https://cnodejs.org/api/v1/topic/" + self.topic.id,
+                type: "GET",
+                dataType: "json",
+                data: {
+                    mdrender: true,
+                    accesstoken: self.user.accesstoken
+                }
+            }).done((res) => {
+                self.loading.hide();
+                if (!res || !res.success) {
+                    //TODO 是否错误抛出  有待商榷
+                    return;
+                }
+                self.topic = res.data || self.topic;
+                if (self.topic.is_collect) {
+                    self.collectBtn.type = "on";
+                }
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+            });
+        },
+        //收藏主题
+        topicCollect() {
+            if(this.collectBtn.lock){
+                return;
+            }
+            let self = this,
+                url = "https://cnodejs.org/api/v1/topic_collect/collect",
+                isCollected = self.collectBtn.type === "on";
+            self.collectBtn.switch("load");
+            self.collectBtn.lock = true;
+            //取消收藏的url
+            if (isCollected) {
+                url = "https://cnodejs.org/api/v1/topic_collect/de_collect";
+            }
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                data: {
+                    topic_id: self.topic.id,
+                    accesstoken: self.user.accesstoken
+                }
+            }).done((res) => {
+                if (!res || !res.success) {
+                    //TODO 是否错误抛出  有待商榷
+                    self.$message({
+                        showClose: true,
+                        message: "操作失败",
+                        type: "warning"
+                    });
+                    return;
+                }
+                self.$message({
+                    showClose: true,
+                    message: (isCollected && "取消" || "") + "收藏成功",
+                    type: "success"
+                });
+                self.collectBtn.switch(isCollected && "off" || "on");
+                self.collectBtn.lock = false;
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+                self.$message({
+                    showClose: true,
+                    message: "操作失败",
+                    type: "warning"
+                });
+            });
+        }
+    },
+    components: {
+        "cv-head": require("../components/header.vue"),
+        "cv-aside": require("../components/aside.vue"),
+        "cv-comment": require("../components/comment.vue"),
+        "cv-reply": require("../components/reply.vue"),
+        "cv-loading": require("../components/loading.vue"),
+    }
 }
 </script>
 
-<style lang="css">
+<style lang="sass">
+#container {
+    #topic-detail {
+        .title {
+            font-size: 18px;
+            display: inline;
+        }
+        .topic-info {
+            margin-top: 10px;
+            position: relative;
+            span {
+                font-size: 12px;
+                margin-left: 10px;
+                display: inline-block;
+                color: #838383;
+                &:before {
+                    content: "•";
+                }
+            }
+            .collectBtn {
+                color: #20a0ff;
+                position: absolute;
+                bottom: -12px;
+                right: 0;
+            }
+        }
+    }
+}
 </style>

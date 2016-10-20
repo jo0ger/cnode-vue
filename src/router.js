@@ -36,7 +36,7 @@ export default () => {
       }
     },
     {
-      path: "/user/:id",
+      path: "/user/:name",
       name: "user",
       component: (resolve) => {
         require(["./pages/user.vue"], resolve);

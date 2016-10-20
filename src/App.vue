@@ -5,6 +5,7 @@
 <script>
 require("./assets/scss/normalize.scss");
 require("./assets/scss/common.scss");
+require("./assets/css/github-markdown.css");
 
 export default {
   data () {

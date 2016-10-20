@@ -80,6 +80,7 @@ export default {
                 localStorage.loginname = data.loginname;
                 localStorage.avatar = data.avatar_url;
                 localStorage.id = data.id;
+                localStorage.accesstoken = self.at;
                 self.$message({
                     showClose: true,
                     message: "登录成功",
