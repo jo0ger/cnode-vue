@@ -2,55 +2,59 @@
   <div id="container">
   <cv-head></cv-head>
   <main id="main">
-    <el-row :gutter="20">
-        <el-col :span="16" :offset="1" id="topic-detail">
-            <div class="grid-content bg-purple">
-                <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <div class="topic-title">
-                            <el-tag :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
-                            <h1 v-text="topic.title" class="title"></h1>
-                        </div>
-                        <p class="topic-info">
-                            <span>发布于 {{topic.create_at | getDateFromNow}}</span>
-                            <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
-                            <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
-                            <span>{{topic.visit_count}} 次浏览</span>
-                            <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
-                            <el-button class="collectBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
-                                <i :class="collectBtn[collectBtn.type]"></i>
-                                {{ topic.is_collect && '已' || ''}}收藏
-                            </el-button>
-                        </p>
+      <el-row :gutter="20">
+        <el-col :span="18">
+            <el-row>
+                <el-col :span="24" id="topic-detail">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <div class="topic-title">
+                                    <el-tag :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
+                                    <h1 v-text="topic.title" class="title"></h1>
+                                </div>
+                                <p class="topic-info">
+                                    <span>发布于 {{topic.create_at | getDateFromNow}}</span>
+                                    <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
+                                    <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
+                                    <span>{{topic.visit_count}} 次浏览</span>
+                                    <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
+                                    <el-button class="collectBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
+                                        <i :class="collectBtn[collectBtn.type]"></i>
+                                        {{ topic.is_collect && '已' || ''}}收藏
+                                    </el-button>
+                                </p>
+                            </div>
+                            <main class="markdown-body topic-content" v-html="topic.content">
+                            </main>
+                        </el-card>
                     </div>
-                    <main class="markdown-body topic-content" v-html="topic.content">
-                    </main>
-                </el-card>
-            </div>
+                </el-col>
+            </el-row>
+            <cv-comment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cv-comment>
+            <el-row  id="reply-panel" class="cv-panel">
+                <el-col :span="24" id="topic-detail">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>回复评论</span>
+                            </div>
+                            <main class="markdown-body reply-content">
+                                <cv-reply :topic.sync="topic"></cv-reply>
+                            </main>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
         </el-col>
         <el-col :span="6">
             <div class="grid-content bg-purple">
-                <cv-aside :author-name="topic.author.loginname" v-if="topic.author"></cv-aside>
+                <cv-aside :topic-id="topic.id" :author-name="topic.author.loginname" v-if="topic.author"></cv-aside>
             </div>
         </el-col>
     </el-row>
-    <cv-comment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cv-comment>
-    <el-row :gutter="20" id="reply-panel" class="cv-panel">
-        <el-col :span="16" :offset="1" id="reply-detail">
-            <div class="grid-content bg-purple">
-                <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <span>回复评论</span>
-                    </div>
-                    <main class="markdown-body reply-content">
-                        <cv-reply :topic.sync="topic"></cv-reply>
-                    </main>
-                </el-card>
-            </div>
-        </el-col>
-    </el-row>
-    <cv-loading :show-loading="loading.showLoading"></cv-loading>
   </main>
+  <cv-loading :show-loading="loading.showLoading"></cv-loading>
 </template>
 
 <script>
@@ -90,6 +94,15 @@ export default {
         this.fetchTopicData();
     },
     mounted() {},
+    watch: {
+        "$route" (to, from) {
+            //如果路由从一个主题进入到另一个主题，则异步加载主题详情
+            if(to.name === from.name){
+                this.topic.id = to.params.id;
+                this.fetchTopicData();
+            }
+        }
+    },
     methods: {
         //获取主题详情
         fetchTopicData() {
@@ -120,7 +133,7 @@ export default {
         },
         //收藏主题
         topicCollect() {
-            if(this.collectBtn.lock){
+            if (this.collectBtn.lock) {
                 return;
             }
             let self = this,
@@ -169,7 +182,7 @@ export default {
         getTypeClass(top, good, tab) {
             if (top) {
                 return "success";
-            } else if ( good) {
+            } else if (good) {
                 return "danger";
             } else if (tab == "ask") {
                 return "primary";
@@ -177,7 +190,7 @@ export default {
                 return "warning";
             } else if (tab == "share") {
                 return "";
-            }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {
                 return "";
@@ -189,7 +202,7 @@ export default {
         "cv-aside": require("../components/aside.vue"),
         "cv-comment": require("../components/comment.vue"),
         "cv-reply": require("../components/reply.vue"),
-        "cv-loading": require("../components/loading.vue"),
+        "cv-loading": require("../components/loading.vue")
     }
 }
 </script>

@@ -16,22 +16,7 @@
                         </el-menu>
                         <cv-loading :showLoading="loading.showLoading"></cv-loading>
                     </div>
-                    <div class="text item article-list">
-                        <article class="article" v-for="item in articles">
-                            <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
-                                <img :src="item.author.avatar_url" alt="" />
-                            </router-link>
-                            <span class="count">
-                                <span class="reply" v-text="item.reply_count"></span>
-                                <span class="seperator">/</span>
-                                <span class="visit" v-text="item.visit_count"></span>
-                            </span>
-                            <!-- <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span> -->
-                            <el-tag :type="item.typeClass" :hit="false" :class="item.typeClass">{{ item.top | getArticleType(item.good, item.tab) }}</el-tag>
-                            <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
-                            <span class="last-reply-time">发布于 {{ item.create_at | getDateFromNow }}</span>
-                        </article>
-                    </div>
+                    <cv-list :topics="topics"></cv-list>
                 </el-card>
             </div>
         </el-col>
@@ -45,7 +30,7 @@
 export default {
     data() {
         return {
-            articles: [],
+            topics: [],
             curTab: this.$route.query.tab || "",
             queryData: {
                 page: 1,
@@ -99,9 +84,9 @@ export default {
                     v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
                 });
                 if(!tabdiff){
-                  this.articles = [];
+                  this.topics = [];
                 }
-                this.articles = this.articles.concat(data.data);
+                this.topics = this.topics.concat(data.data);
 
             }).fail((error) => {
                 this.showLoading = false;
@@ -109,14 +94,6 @@ export default {
             });
         },
         getTypeClass(top, good, tab) {
-            // if (top || good) {
-            //     return "hasColor";
-            // } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
-            //     return "hidden";
-            // } else {
-            //     return "noColor";
-            // }
-
             if (top) {
                 return "success";
             } else if ( good) {
@@ -152,6 +129,7 @@ export default {
     components: {
         "cv-head": require("../components/header.vue"),
         "cv-loading": require("../components/loading.vue"),
+        "cv-list": require("../components/list.vue")
     }
 }
 </script>
@@ -162,71 +140,6 @@ export default {
         padding: 0;
         background-color: #eff2f7;
         .index-nav {}
-    }
-    .el-card__body{
-      .article{
-        border-top: 1px solid #f0f0f0;
-        padding: 10px 0;
-        &:nth-child(1) {
-          border-top: none;
-          padding-top: 0;
-        }
-        .creater-avatar{
-          display: inline-block;
-          img{
-            width: 30px;
-            height: 30px;
-          }
-        }
-        .count{
-          font-size: 10px;
-          width: 70px;
-          display: inline-block;
-          text-align: center;
-          .reply{
-            font-size: 14px;
-            color: #9e78c0;
-          }
-          .seperator{
-            margin: 0 -3px;
-          }
-          .visit{
-
-          }
-        }
-        .type{
-          padding: 2px 4px;
-          border-radius: 3px;
-          font-size: 12px;
-          &.hasColor{
-            background: #80bd01;
-            color: #fff;
-          }
-          &.noColor{
-            background-color: #e5e5e5;
-            color: #999;
-          }
-        }
-        .title{
-          max-width: 70%;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          display: inline-block;
-          vertical-align: middle;
-          font-size: 16px;
-          line-height: 30px;
-        }
-        .last-reply-time{
-          float: right;
-          text-align: right;
-          min-width: 50px;
-          display: inline-block;
-          white-space: nowrap;
-          color: #778087;
-          font-size: 11px;
-        }
-      }
     }
   }
 </style>

@@ -15,15 +15,17 @@
                   <span class="author-score">积分：{{author.score}}</time>
               </p>
           </section>
-          <section class="author-recent-topic">
+          <section class="author-recent-topic" v-if="!score && score !== 0">
               <header class="title">
-                  <span>最近文章</span>
+                  <span>最近其他文章</span>
               </header>
               <main class="topic-list">
                   <ul>
-                      <li v-for="topic in author.recent_topics">
-                          <a @click="goToTopic(topic.id)">{{ topic.title }}</a>
+                      <li v-for="n in recentLength" v-if="author.recent_topics[n-1].id !== topicId">
+                          <a href="javascript:" @click.prevent="goToTopic(author.recent_topics[n-1].id)">{{ author.recent_topics[n-1].title }}</a>
                       </li>
+                      <li v-if="!author.recent_topics.length">暂无</li>
+                      <li v-else>...</li>
                   </ul>
               </main>
           </section>
@@ -46,12 +48,26 @@ export default {
             }
         }
     },
-    props: ["authorName"],
-    computed: {},
+    props: ["authorName", "topicId", "score"],
+    computed: {
+        recentLength: function() {
+            let length = this.author.recent_topics.length;
+            return length > 10 && 10 || length;
+        }
+    },
     created() {
-        this.fetchUserInfo();
+        if (this.authorName) {
+            this.fetchUserInfo();
+        }
     },
     mounted() {},
+    watch: {
+        "authorName" (){
+            if(this.authorName){
+                this.fetchUserInfo();
+            }
+        }
+    },
     methods: {
         //获取用户信息
         fetchUserInfo() {
@@ -69,10 +85,15 @@ export default {
                 //TODO 是否错误抛出  有待商榷
             });
         },
-        goToTopic (topicId){
-            if(!topicId)
+        goToTopic(topicId) {
+            if (!topicId)
                 return;
-            this.$router.replace({name: "topic", params: {id: topicId}});
+            this.$router.push({
+                name: "topic",
+                params: {
+                    id: topicId
+                }
+            });
         }
     },
     components: {}
@@ -89,6 +110,7 @@ export default {
     img {
         width: auto;
         max-width: 100%;
+        max-height: 100px;
         left: 0;
         right: 0;
         top: 0;
@@ -113,21 +135,21 @@ export default {
         }
     }
 }
-.author-recent-topic{
-    .title{
+.author-recent-topic {
+    .title {
         padding: 18px 20px;
         border-bottom: 1px solid rgba(160,160,160,0.2);
     }
-    .topic-list{
-        ul{
+    .topic-list {
+        ul {
             list-style: none;
-            li{
+            li {
                 line-height: 1.5;
                 border-bottom: 1px solid rgba(160,160,160,0.2);
-                padding: 10px 10px;
-                a{
+                padding: 10px;
+                a {
                     color: #838383;
-                    &:active{
+                    &:active {
                         background-color: #fff;
                     }
                 }

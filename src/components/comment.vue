@@ -1,6 +1,6 @@
 <template lang="html">
-    <el-row :gutter="20" id="comment-panel" class="cv-panel">
-        <el-col :span="16" :offset="1" id="comment-panel">
+    <el-row id="comment-panel" class="cv-panel">
+        <el-col :span="24" id="comment-panel">
             <div class="grid-content bg-purple">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">

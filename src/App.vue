@@ -1,5 +1,8 @@
 <template lang="html">
-  <router-view></router-view>
+    <div>
+        <router-view></router-view>
+        <cv-backtotop></cv-backtotop>
+    </div>
 </template>
 
 <script>
@@ -17,6 +20,7 @@ export default {
   methods: {
   },
   components: {
+      "cv-backtotop": require("./components/backToTop.vue")
   }
 }
 </script>

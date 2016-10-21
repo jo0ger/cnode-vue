@@ -38,10 +38,16 @@ export default {
     created () {
         if(this.user.loginname && !this.user.score)
             this.fetchUserInfo();
-        if(this.user.loginname && !this.message)
+        if(this.user.loginname && typeof this.message !== "number")
             this.fetchMessage();
     },
     mounted() {},
+    // watch: {
+    //     "$route": function() {
+    //         console.log(111);
+    //         window.location.reload();
+    //     }
+    // },
     methods: {
         //获取用户信息 just for 获取用户积分
         fetchUserInfo (){
@@ -69,7 +75,6 @@ export default {
                     accesstoken: self.user.accesstoken
                 }
             }).done((res) => {
-                console.log(res);
                 if(!res || !res.success){
                     //TODO 是否错误抛出  有待商榷
                     return;

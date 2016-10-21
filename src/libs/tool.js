@@ -10,22 +10,28 @@ exports.formatDate = {
         if (ms.toString().length === 10) {
             ms = ms * 1000;
         }
-        var d = new Date(ms),
-            format = format || "yyyy-MM-dd hh:mm:ss",
+        format = format || "yyyy-MM-dd hh:mm:ss";
+        let d = new Date(ms),
             year = d.getFullYear(),
             month = d.getMonth() + 1,
             day = d.getDate(),
             hour = d.getHours(),
-            minute = d.getMinutes();
-        seconds = d.getSeconds();
+            minute = d.getMinutes(),
+            seconds = d.getSeconds();
 
-
+        let addPrefix = function(source){
+            if(source < 10){
+                return "0" + source;
+            }else {
+                return source;
+            }
+        };
         format = format.replace("yyyy", year)
-            .replace("MM", month)
-            .replace("dd", day)
-            .replace("hh", hour)
-            .replace("mm", minute)
-            .replace("ss", seconds);
+            .replace("MM", addPrefix(month))
+            .replace("dd", addPrefix(day))
+            .replace("hh", addPrefix(hour))
+            .replace("mm", addPrefix(minute))
+            .replace("ss", addPrefix(seconds));
         return format;
     }
 };
