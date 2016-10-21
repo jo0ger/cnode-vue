@@ -26,7 +26,8 @@
                                 <span class="seperator">/</span>
                                 <span class="visit" v-text="item.visit_count"></span>
                             </span>
-                            <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span>
+                            <!-- <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span> -->
+                            <el-tag :type="item.typeClass" :hit="false" :class="item.typeClass">{{ item.top | getArticleType(item.good, item.tab) }}</el-tag>
                             <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
                             <span class="last-reply-time">发布于 {{ item.create_at | getDateFromNow }}</span>
                         </article>
@@ -82,8 +83,6 @@ export default {
             this.loading.show();
             let tab = this.$route.query.tab || "all",
                 tabdiff = tab === this.queryData.tab;
-                console.log(tab);
-                console.log(this.queryData.tab);
             this.queryData.tab = tab;
             $.ajax({
                 url: "https://cnodejs.org/api/v1/topics",
@@ -92,7 +91,6 @@ export default {
             }).done((data) => {
                 this.loading.hide();
                 this.scrollLock = true;
-                console.log(data);
                 if (!data || !data.success) {
                     //TODO 错误抛出
                     return;
@@ -111,13 +109,31 @@ export default {
             });
         },
         getTypeClass(top, good, tab) {
-            if (top || good) {
-                return "hasColor";
-            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+            // if (top || good) {
+            //     return "hasColor";
+            // } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+            //     return "hidden";
+            // } else {
+            //     return "noColor";
+            // }
+
+            if (top) {
+                return "success";
+            } else if ( good) {
+                return "danger";
+            } else if (tab == "ask") {
+                return "primary";
+            } else if (tab == "job") {
+                return "warning";
+            } else if (tab == "share") {
+                return "";
+            }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {
-                return "noColor";
+                return "";
             }
+
+
         },
         scrollLoad: function(){
           if(!this.scrollLock)

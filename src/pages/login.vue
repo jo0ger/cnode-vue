@@ -12,6 +12,7 @@
                 <el-input v-model="at" :maxlength="36" :minlength='36'></el-input>
               </el-form-item>
               <el-form-item>
+                  <el-button type="primary" @click.native="goBack" v-if="redirect"><i class="el-icon-caret-left"></i>返回上一页</el-button>
                 <el-button type="primary" @click.native="login">登录</el-button>
               </el-form-item>
             </el-form>
@@ -43,12 +44,17 @@ export default {
                 hide() {
                     this.showLoading = false;
                 }
-            }
+            },
+            redirect: this.$route.query.redirect || ""
         }
     },
     computed: {},
     mounted() {},
     methods: {
+        goBack (){
+            let redirect = decodeURIComponent(this.$route.query.redirect);
+            this.$router.replace(redirect);
+        },
         login() {
             let self = this;
             if (self.at === '') {
@@ -59,7 +65,9 @@ export default {
                 })
                 return;
             }
+
             this.loading.show();
+
             $.ajax({
                 type: "POST",
                 url: 'https://cnodejs.org/api/v1/accesstoken',
@@ -86,12 +94,8 @@ export default {
                     message: "登录成功",
                     type: "success",
                     onClose () {
-                        self.$router.replace({
-                            name: "index",
-                            query: {
-                                tab: "all"
-                            }
-                        });
+                        let redirect = decodeURIComponent(self.$route.query.redirect || "/");
+                        self.$router.replace(redirect);
                     }
                 });
             }).fail((error) => {

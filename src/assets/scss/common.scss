@@ -32,9 +32,11 @@ img{
 }
 
 .hidden{
-  display: none;
+  display: none !important;
 }
-
+.nopadding{
+    padding: 0 !important;
+}
 .cv-panel{
     margin-top: 15px;
 }

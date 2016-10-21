@@ -82,18 +82,21 @@ export default {
         //退出
         logout (){
             let self = this;
-            localStorage.loginname = "";
-            localStorage.avatar = "";
-            localStorage.id = "";
-            localStorage.accesstoken = "";
+            // localStorage.loginname = "";
+            // localStorage.avatar = "";
+            // localStorage.id = "";
+            // localStorage.accesstoken = "";
+            // localStorage.message = "";
+            // localStorage.score = "";
+            localStorage.clear();
+            window.location.reload();
+            Object.keys(self.user).forEach(function(v){
+                self.user[v] = "";
+            });
             this.$message({
                 showClose: true,
                 message: "退出成功",
                 type: "success",
-                onClose () {
-                    // self.$router.go({name: "index"})
-                    window.location.reload();
-                }
             })
         }
     },
