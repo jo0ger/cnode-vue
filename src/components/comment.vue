@@ -159,7 +159,7 @@ export default {
       chekcIsUp (ups){
           let result = "",
               self = this;
-          result = ups.find(function(v){
+          result = ups.find((v) => {
               if(v === self.user.id){
                   return true;
               }

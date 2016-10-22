@@ -21,7 +21,7 @@ export default {
                 avatar: localStorage.avatar || ""
             },
             flag: new Date().getTime(),
-            tagText: '<br/><br/><a class="tag" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
+            tagText: '<br/><br/><a class="tag" target="new" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
             placeholder: "请输入评论...",
             btnText: "评论",
             replyCache: localStorage.replyCache || ""
@@ -39,7 +39,6 @@ export default {
         simplemde = new Simplemde({
             element: document.getElementById('answereditor' + this.flag),
             forceSync: true,
-            promptURLs: true,
             toolbarTips: true,
         })
         this.replyTo && simplemde.value("@" + this.replyTo);

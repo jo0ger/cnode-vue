@@ -12,10 +12,9 @@
         <template slot="title"><img :src="user.avatar" alt="" class="avatar"/>{{user.loginname}}</template>
         <el-menu-item index="" :route="{name: 'user', params: {name: user.loginname}}">个人主页</el-menu-item>
         <el-menu-item index=""><span>积分：</span>{{user.score}}</el-menu-item>
-        <el-menu-item index=""><el-badge :value="user.message" class="item"><i class='el-icon-message'></i>消息</el-badge></el-menu-item>
+        <el-menu-item index=""><i class='el-icon-message'></i>消息<el-badge :value="user.message" :max="99" class="mark"></el-badge></el-menu-item>
         <el-menu-item index="" @click.native="logout"><i class="el-icon-upload2"></i>退出</el-menu-item>
       </el-submenu>
-    </el-menu>
   </header>
 </template>
 
@@ -35,10 +34,10 @@ export default {
         }
     },
     computed: {},
-    created () {
-        if(this.user.loginname && !this.user.score)
+    created() {
+        if (this.user.loginname && !this.user.score)
             this.fetchUserInfo();
-        if(this.user.loginname && typeof this.message !== "number")
+        if (this.user.loginname && typeof this.message !== "number")
             this.fetchMessage();
     },
     mounted() {},
@@ -50,13 +49,13 @@ export default {
     // },
     methods: {
         //获取用户信息 just for 获取用户积分
-        fetchUserInfo (){
+        fetchUserInfo() {
             let self = this;
             $.ajax({
                 url: "https://cnodejs.org/api/v1/user/" + self.user.loginname,
                 type: "GET",
             }).done((res) => {
-                if(!res || !res.success){
+                if (!res || !res.success) {
                     //TODO 是否错误抛出  有待商榷
                     return;
                 }
@@ -66,7 +65,7 @@ export default {
             });
         },
         //just for获取未读消息
-        fetchMessage (){
+        fetchMessage() {
             let self = this;
             $.ajax({
                 url: "https://cnodejs.org/api/v1/message/count/",
@@ -75,7 +74,7 @@ export default {
                     accesstoken: self.user.accesstoken
                 }
             }).done((res) => {
-                if(!res || !res.success){
+                if (!res || !res.success) {
                     //TODO 是否错误抛出  有待商榷
                     return;
                 }
@@ -85,7 +84,7 @@ export default {
             });
         },
         //退出
-        logout (){
+        logout() {
             let self = this;
             // localStorage.loginname = "";
             // localStorage.avatar = "";
@@ -95,7 +94,7 @@ export default {
             // localStorage.score = "";
             localStorage.clear();
             window.location.reload();
-            Object.keys(self.user).forEach(function(v){
+            Object.keys(self.user).forEach(function(v) {
                 self.user[v] = "";
             });
             this.$message({
@@ -110,25 +109,30 @@ export default {
 </script>
 
 <style lang="sass">
-  #header{
+#header {
     background-color: #324057;
-    #logo{
-      width: 120px;
-      padding: 10px 55px;
-      height: 28px;
-      display: block;
-      float: left;
-      img{
-        max-width:100%;
-        max-height: 100%;
-      }
+    #logo {
+        width: 120px;
+        padding: 10px 55px;
+        height: 28px;
+        display: block;
+        float: left;
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
     }
-    #navbar{
-      background-color: transparent;
-      .avatar{
-          width: 30px;
-          height: 30px;
-      }
+    #navbar {
+        background-color: transparent;
+        .avatar {
+            width: 30px;
+            height: 30px;
+        }
+        .mark {
+            margin-top: 8px;
+            line-height: 1;
+            float: right;
+        }
     }
-  }
+}
 </style>

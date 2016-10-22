@@ -149,9 +149,6 @@ export default {
                 padding: 10px;
                 a {
                     color: #838383;
-                    &:active {
-                        background-color: #fff;
-                    }
                 }
             }
         }

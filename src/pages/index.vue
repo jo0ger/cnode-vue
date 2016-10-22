@@ -17,6 +17,9 @@
                         <cv-loading :showLoading="loading.showLoading"></cv-loading>
                     </div>
                     <cv-list :topics="topics"></cv-list>
+                    <section class="page">
+                        <cv-page></cv-page>
+                    </section>
                 </el-card>
             </div>
         </el-col>
@@ -59,9 +62,10 @@ export default {
     },
     mounted() {
         this.fetchTopics();
+        //上拉加载
         window.addEventListener("scroll", (e) => {
           this.scrollLoad();
-        })
+      });
     },
     methods: {
         fetchTopics() {
@@ -129,7 +133,8 @@ export default {
     components: {
         "cv-head": require("../components/header.vue"),
         "cv-loading": require("../components/loading.vue"),
-        "cv-list": require("../components/list.vue")
+        "cv-list": require("../components/list.vue"),
+        "cv-page": require("../components/page.vue")
     }
 }
 </script>

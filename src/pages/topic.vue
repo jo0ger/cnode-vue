@@ -96,7 +96,7 @@ export default {
     mounted() {},
     watch: {
         "$route" (to, from) {
-            //如果路由从一个主题进入到另一个主题，则异步加载主题详情
+            //如果路由从一个主题进入到另一个主题，此时只改变了hash，因此需要异步加载主题详情
             if(to.name === from.name){
                 this.topic.id = to.params.id;
                 this.fetchTopicData();
