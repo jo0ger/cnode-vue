@@ -5,7 +5,7 @@
     <el-row :gutter="20" id="container">
         <el-col :span="18" id="content" :offset="3">
             <div class="grid-content bg-purple">
-                <el-card class="box-card">
+                <el-card class="box-card index">
                     <div slot="header" class="clearfix index-nav">
                         <el-menu id="navbar" theme="light" :default-active="curTab" class="el-menu-demo" mode="horizontal" router>
                             <el-menu-item index="all" :route="{name: 'index', query: {tab: 'all'}}">全部</el-menu-item>
@@ -141,10 +141,12 @@ export default {
 
 <style lang="sass">
 #content {
-    .el-card__header {
-        padding: 0;
-        background-color: #eff2f7;
-        .index-nav {}
+    .index{
+        .el-card__header {
+            padding: 0;
+            background-color: #eff2f7;
+            .index-nav {}
+            }
     }
   }
 </style>

@@ -44,7 +44,7 @@
                                       </div>
                                   </div>
                                   <main class="recent_topics">
-                                      <cv-list :topics="user.recent_topics"></cv-list>
+                                      <cv-list :topics="user.recent_topics" :hideCount="hideCount"></cv-list>
                                   </main>
                               </el-card>
                           </div>
@@ -60,7 +60,7 @@
                                       </div>
                                   </div>
                                   <main class="recent_replies">
-                                      <cv-list :topics="user.recent_replies"></cv-list>
+                                      <cv-list :topics="user.recent_replies"  :hideCount="hideCount"></cv-list>
                                   </main>
                               </el-card>
                           </div>
@@ -69,7 +69,7 @@
               </el-col>
               <el-col :span="6">
                   <div class="grid-content bg-purple">
-                      <cv-aside :author-name="loginname" :score="user.score" v-if="loginname"></cv-aside>
+                      <cv-aside :author-name="loginname" :hasRecent="false" v-if="loginname"></cv-aside>
                   </div>
               </el-col>
           </el-row>
@@ -93,6 +93,7 @@ export default {
                     this.showLoading = false;
                 }
             },
+            hideCount: true
         }
     },
     computed: {},

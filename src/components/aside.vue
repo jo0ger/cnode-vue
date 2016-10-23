@@ -1,7 +1,8 @@
 <template lang="html">
   <el-card :body-style="bodyStyle" v-if="author.loginname">
       <div slot="header" class="clearfix">
-        <span>作者信息</span>
+        <span v-if="hasRecent">作者信息</span>
+        <span v-else>个人信息</span>
       </div>
       <div class="text">
           <router-link :to="{name:'user', params: {name: author.loginname}}" class="author-avatar">
@@ -15,7 +16,7 @@
                   <span class="author-score">积分：{{author.score}}</time>
               </p>
           </section>
-          <section class="author-recent-topic" v-if="!score && score !== 0">
+          <section class="author-recent-topic" v-if="hasRecent">
               <header class="title">
                   <span>最近其他文章</span>
               </header>
@@ -48,7 +49,7 @@ export default {
             }
         }
     },
-    props: ["authorName", "topicId", "score"],
+    props: ["authorName", "topicId", "hasRecent"],
     computed: {
         recentLength: function() {
             let length = this.author.recent_topics.length;

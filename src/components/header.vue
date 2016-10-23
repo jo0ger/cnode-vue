@@ -9,12 +9,13 @@
       <el-menu-item index="about" :route="{name: 'about'}">关于</el-menu-item>
       <el-menu-item index="login" :route="{name: 'login'}" v-if="!user.loginname">登录</el-menu-item>
       <el-submenu index="user" v-if="user.loginname">
-        <template slot="title"><img :src="user.avatar" alt="" class="avatar"/>{{user.loginname}}</template>
+        <template slot="title"><img :src="user.avatar" alt="" class="avatar"/>{{user.loginname}}<el-badge :value="user.message" :max="99" class="mark" v-if="user.message"></el-badge></template>
         <el-menu-item index="" :route="{name: 'user', params: {name: user.loginname}}">个人主页</el-menu-item>
         <el-menu-item index=""><span>积分：</span>{{user.score}}</el-menu-item>
-        <el-menu-item index=""><i class='el-icon-message'></i>消息<el-badge :value="user.message" :max="99" class="mark"></el-badge></el-menu-item>
+        <el-menu-item index="" :route="{name: 'message'}"><i class='el-icon-message'></i>消息<el-badge :value="user.message" :max="99" class="mark"></el-badge></el-menu-item>
         <el-menu-item index="" @click.native="logout"><i class="el-icon-upload2"></i>退出</el-menu-item>
       </el-submenu>
+      <el-menu-item index="newtopic" :route="{name: 'newtopic'}" v-if="user.loginname">发布话题</el-menu-item>
   </header>
 </template>
 
@@ -28,7 +29,7 @@ export default {
                 id: localStorage.id || "",
                 accesstoken: localStorage.accesstoken || "",
                 score: localStorage.score || "",
-                message: "",
+                message: 0,
             },
             curTab: this.$route.name || "index"
         }
@@ -37,16 +38,10 @@ export default {
     created() {
         if (this.user.loginname && !this.user.score)
             this.fetchUserInfo();
-        if (this.user.loginname && typeof this.message !== "number")
+        if (this.user.loginname)
             this.fetchMessage();
     },
     mounted() {},
-    // watch: {
-    //     "$route": function() {
-    //         console.log(111);
-    //         window.location.reload();
-    //     }
-    // },
     methods: {
         //获取用户信息 just for 获取用户积分
         fetchUserInfo() {
@@ -92,15 +87,25 @@ export default {
             // localStorage.accesstoken = "";
             // localStorage.message = "";
             // localStorage.score = "";
+
+            // Object.keys(self.user).forEach(function(v) {
+            //     self.user[v] = "";
+            // });
+
             localStorage.clear();
-            window.location.reload();
-            Object.keys(self.user).forEach(function(v) {
-                self.user[v] = "";
-            });
             this.$message({
                 showClose: true,
                 message: "退出成功",
                 type: "success",
+                onClose (){
+                    if(self.$route.matched.some(record => record.meta.requiresAuth)){
+                        //如果此时路由有登录权限控制，则退出后返回到首页
+                        self.$router.push({name: "index", query: {tab: "all"}});
+                    }else{
+                        //否则刷新当前页面
+                        window.location.reload();
+                    }
+                }
             })
         }
     },

@@ -20,11 +20,11 @@ export default {
                 id: localStorage.id || "",
                 avatar: localStorage.avatar || ""
             },
-            flag: new Date().getTime(),
+            flag: new Date().getTime(), //这里是为了将多个评论框区分开
             tagText: '<br/><br/><a class="tag" target="new" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
             placeholder: "请输入评论...",
             btnText: "评论",
-            replyCache: localStorage.replyCache || ""
+            replyCache: localStorage.replyCache || "" //如果用户未登录，暂存已编写好的评论
         }
     },
     props: ["topic", "replyId", "replyTo"],
@@ -34,17 +34,38 @@ export default {
             this.placeholder = "您未登录，评论将暂存...";
             this.btnText = "登录后评论";
         }
+        // $("body").animate({
+		// 	scrollTop : $("body").offset().top
+		// }, 500)
     },
     mounted() {
+        console.log($("#answereditor" + this.flag).offset().top);
+        console.log($(window).scrollTop());
+        console.log($("body").scrollTop());
+        console.log($(window).height());
+        if(this.replyId){
+            let editor_top = $("#answereditor" + this.flag).offset().top,
+                window_top = $(window).scrollTop(),
+                window_height = $(window).height();
+            if(editor_top > window_top + window_height){
+                $("body").animate({
+                    scrollTop: $("#answereditor" + this.flag).offset().top - window_height / 3
+                }, 500);
+            }
+        }
         simplemde = new Simplemde({
             element: document.getElementById('answereditor' + this.flag),
             forceSync: true,
             toolbarTips: true,
+            showIcons: ["bold", "italic", "strikethrough", "heading", "heading-smaller", "heading-bigger", "heading-1", "heading-2", "heading-3", "code", "quote", "unordered-list", "ordered-list", "clean-block", "link", "image", "table", "horizontal-rule", "preview", "side-by-side", "fullscreen", "guide"]
         })
         this.replyTo && simplemde.value("@" + this.replyTo);
         if(this.topic.id === localStorage.topicId){
             this.replyCache && simplemde.value(this.replyCache);
         }
+
+
+
     },
     methods: {
         unLoginHandle (){
@@ -65,7 +86,11 @@ export default {
                 this.unLoginHandle();
             }else{
                 let self = this,
-                replyContent = document.getElementById("answereditor" + self.flag).value || "";
+                //这里不能使用simplemde.value()，
+                //如果评论里的回复框一旦有一个以上打开过，则simplemde的codemirror将这个框的值映射过来
+                //导致话题评论框点击发表时，replyContent的值是刚打开过的评论回复框的值
+                replyContent = document.getElementById("answereditor" + this.flag).value || "";
+                console.log(replyContent);
                 if (!replyContent) {
                     self.$message({
                         showClose: true,

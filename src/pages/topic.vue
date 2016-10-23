@@ -1,7 +1,7 @@
 <template lang="html">
   <div id="container">
   <cv-head></cv-head>
-  <main id="main">
+  <main id="main" v-if="!topicerror">
       <el-row :gutter="20">
         <el-col :span="18">
             <el-row>
@@ -18,8 +18,12 @@
                                     <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
                                     <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
                                     <span>{{topic.visit_count}} 次浏览</span>
+                                    <span>{{topic.replies.length}} 评论</span>
                                     <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
-                                    <el-button class="collectBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
+                                    <el-button class="editBtn actionBtn" type="text" @click.native="topicEdit" v-if="user.loginname && user.loginname == topic.author.loginname">
+                                        <i class="el-icon-edit"></i>编辑
+                                    </el-button>
+                                    <el-button class="collectBtn actionBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
                                         <i :class="collectBtn[collectBtn.type]"></i>
                                         {{ topic.is_collect && '已' || ''}}收藏
                                     </el-button>
@@ -49,12 +53,16 @@
         </el-col>
         <el-col :span="6">
             <div class="grid-content bg-purple">
-                <cv-aside :topic-id="topic.id" :author-name="topic.author.loginname" v-if="topic.author"></cv-aside>
+                <cv-aside :topic-id="topic.id"
+                    :hasRecent="true"
+                    :author-name="topic.author.loginname"
+                    v-if="topic.author"></cv-aside>
             </div>
         </el-col>
     </el-row>
   </main>
   <cv-loading :show-loading="loading.showLoading"></cv-loading>
+  </div>
 </template>
 
 <script>
@@ -63,6 +71,9 @@ export default {
         return {
             topic: {
                 id: this.$route.params.id,
+                author: {
+                    loginname:""
+                }
             },
             collectBtn: {
                 type: "off",
@@ -87,6 +98,7 @@ export default {
                     this.showLoading = false;
                 }
             },
+            topicerror: false
         }
     },
     computed: {},
@@ -99,6 +111,7 @@ export default {
             //如果路由从一个主题进入到另一个主题，此时只改变了hash，因此需要异步加载主题详情
             if(to.name === from.name){
                 this.topic.id = to.params.id;
+                this.collectBtn.type = "off";
                 this.fetchTopicData();
             }
         }
@@ -129,6 +142,13 @@ export default {
                 }
             }).fail((error) => {
                 //TODO 是否错误抛出  有待商榷
+                self.loading.hide();
+                self.topicerror = true;
+                self.$message({
+                  showClose: true,
+                  message: JSON.parse(error.responseText).error_msg || "获取数据失败",
+                  type: "warning"
+                });
             });
         },
         //收藏主题
@@ -172,12 +192,27 @@ export default {
                 self.collectBtn.lock = false;
             }).fail((error) => {
                 //TODO 是否错误抛出  有待商榷
+                self.error = true;
                 self.$message({
                     showClose: true,
                     message: "操作失败",
                     type: "warning"
                 });
             });
+        },
+        //编辑主题
+        topicEdit (){
+            if(!this.user.accesstoken){
+                this.$router.push({name: "login", query: {redirect: encodeURIComponent(this.$route.path)}});
+            }else{
+                let editTopic = {
+                    tab: this.topic.tab,
+                    title: this.topic.title,
+                    content: ""
+                };
+                localStorage.editTopic = JSON.stringify(editTopic);
+                this.$router.push({name: "edittopic", params: {id: this.topic.id}});
+            }
         },
         getTypeClass(top, good, tab) {
             if (top) {
@@ -224,13 +259,17 @@ export default {
                 color: #838383;
                 &:before {
                     content: "•";
+                    margin-right: 5px;
                 }
             }
-            .collectBtn {
+            .actionBtn {
                 color: #20a0ff;
                 position: absolute;
                 bottom: -12px;
                 right: 0;
+                &.editBtn{
+                    right: 60px;
+                }
             }
         }
     }

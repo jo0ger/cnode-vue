@@ -4,10 +4,10 @@
             <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
                 <img :src="item.author.avatar_url" alt="" />
             </router-link>
-            <span class="count" v-if="item.reply_count || item.visit_count">
-                <span class="reply" v-text="item.reply_count"></span>
+            <span class="count" v-if="!hideCount">
+                <span class="reply" v-text="item.reply_count || 0"></span>
                 <span class="seperator">/</span>
-                <span class="visit" v-text="item.visit_count"></span>
+                <span class="visit" v-text="item.visit_count || 0"></span>
             </span>
             <el-tag v-if="item.typeClass"
                 :type="item.typeClass"
@@ -24,7 +24,7 @@ export default {
   data () {
     return {}
   },
-  props: ["topics"],
+  props: ["topics", "hideCount"], //hideCount是否隐藏浏览量及回复量，因为在用户主页上api没有返回这两项
   computed: {},
   mounted () {},
   methods: {},
@@ -36,7 +36,7 @@ export default {
     .topic{
       border-top: 1px solid #f0f0f0;
       padding: 10px 0;
-      &:nth-child(1) {
+      &:nth-of-type(1) {
         border-top: none;
         padding-top: 0;
       }

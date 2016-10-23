@@ -37,7 +37,6 @@
                                     </p>
                                 </main>
                                 <cv-reply :topic.sync="topic"
-                                    :topic-id="topic.id"
                                     :reply-id="item.id"
                                     :reply-to="item.author.loginname"
                                     @hideReplyPanel="hideReplyPanel"
@@ -66,7 +65,7 @@ export default {
   },
   props: ["topic", "commentList", "commentCount"],
   watch: {
-      "commentList" (){
+      "commentList" () {
           let self = this;
           this.commentList.forEach(function(v, i){
               Vue.set(v, "isUp", self.chekcIsUp(v.ups))
@@ -148,6 +147,7 @@ export default {
           if(!this.user.loginname){
               this.goLogin();
           }else{
+              console.log($("#answereditor" + this.flag));
               this.currentReplyId = (this.currentReplyId === commentId) ? "" : commentId;
           }
       },

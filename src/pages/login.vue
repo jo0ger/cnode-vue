@@ -2,25 +2,31 @@
     <div id="container">
     <cv-head></cv-head>
     <main id="main">
-    <div class="content" id="content">
-      <div class="panel" id="panel">
-        <header id="index-nav">登录</header>
-        <main id="container">
-          <div class="input-area">
-            <el-form ref="form" label-width="80px" @submit.prevent="login">
-              <el-form-item label="token">
-                <el-input v-model="at" :maxlength="36" :minlength='36'></el-input>
-              </el-form-item>
-              <el-form-item>
-                  <el-button type="primary" @click.native="goBack" v-if="redirect"><i class="el-icon-caret-left"></i>返回上一页</el-button>
-                <el-button type="primary" @click.native="login">登录</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
-        </main>
-      </div>
-    </div>
-</main>
+        <el-row :gutter="20">
+            <el-col :span="18" id="content" :offset="3">
+                <div class="grid-content bg-purple">
+                    <el-card class="box-card">
+                        <header slot="header" class="clearfix" id="panel-header">
+                            <span>登录</span>
+                        </header>
+                        <main>
+                            <div class="input-area">
+                              <el-form ref="form" label-width="80px" @submit.prevent="login">
+                                <el-form-item label="token">
+                                  <el-input v-model="at" :maxlength="36" :minlength='36' placeholder="请输入个人accesstoken..."></el-input>
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button type="primary" @click.native="goBack" v-if="redirect"><i class="el-icon-caret-left"></i>返回上一页</el-button>
+                                  <el-button type="primary" @click.native="login">登录</el-button>
+                                </el-form-item>
+                              </el-form>
+                            </div>
+                        </main>
+                    </el-card>
+                </div>
+            </el-col>
+          </el-row>
+    </main>
     <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
   </div>
 </template>
@@ -51,7 +57,7 @@ export default {
     computed: {},
     mounted() {},
     methods: {
-        goBack (){
+        goBack() {
             let redirect = decodeURIComponent(this.$route.query.redirect);
             this.$router.replace(redirect);
         },
@@ -60,7 +66,7 @@ export default {
             if (self.at === '') {
                 self.$message({
                     showClose: true,
-                    message: "token格式错误",
+                    message: "token格式错误，可从官网个人设置页面获取",
                     type: "error"
                 })
                 return;
@@ -93,7 +99,7 @@ export default {
                     showClose: true,
                     message: "登录成功",
                     type: "success",
-                    onClose () {
+                    onClose() {
                         let redirect = decodeURIComponent(self.$route.query.redirect || "/");
                         self.$router.replace(redirect);
                     }
@@ -117,27 +123,10 @@ export default {
 </script>
 
 <style lang="sass">
-#content {
-    margin-right: 300px;
-    padding: 0;
-    #panel {
-        #index-nav {
-            padding: 10px;
-            background-color: #f6f6f6;
-            border-radius: 3px 3px 0 0;
-        }
-        #container {
-            background-color: #fff;
-            min-height: 400px;
-            position: relative;
-            padding: 24px;
-            .input-area {
-                position: relative;
-                text-align: center;
-                width: 50%;
-                margin-left: 25%;
-            }
-        }
+    .input-area {
+        position: relative;
+        text-align: center;
+        width: 50%;
+        margin-left: 25%;
     }
-}
 </style>
