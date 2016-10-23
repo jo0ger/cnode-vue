@@ -188,6 +188,7 @@ export default {
                     message: (isCollected && "取消" || "") + "收藏成功",
                     type: "success"
                 });
+                self.topic.is_collect = true;
                 self.collectBtn.switch(isCollected && "off" || "on");
                 self.collectBtn.lock = false;
             }).fail((error) => {
