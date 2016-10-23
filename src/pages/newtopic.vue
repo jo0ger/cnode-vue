@@ -69,7 +69,7 @@ export default {
       };
 
       //编辑话题
-      let editTopic = JSON.parse(localStorage.editTopic || "");
+      let editTopic = JSON.parse(localStorage.editTopic || "{}");
     return {
         user: {
             accesstoken: localStorage.accesstoken || ""
