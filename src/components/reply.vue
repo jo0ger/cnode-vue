@@ -34,9 +34,6 @@ export default {
             this.placeholder = "您未登录，评论将暂存...";
             this.btnText = "登录后评论";
         }
-        // $("body").animate({
-		// 	scrollTop : $("body").offset().top
-		// }, 500)
     },
     mounted() {
         if(this.replyId){
