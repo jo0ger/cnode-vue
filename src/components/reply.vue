@@ -39,10 +39,6 @@ export default {
 		// }, 500)
     },
     mounted() {
-        console.log($("#answereditor" + this.flag).offset().top);
-        console.log($(window).scrollTop());
-        console.log($("body").scrollTop());
-        console.log($(window).height());
         if(this.replyId){
             let editor_top = $("#answereditor" + this.flag).offset().top,
                 window_top = $(window).scrollTop(),
