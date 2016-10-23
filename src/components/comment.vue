@@ -64,24 +64,39 @@ export default {
     }
   },
   props: ["topic", "commentList", "commentCount"],
-  watch: {
-      "commentList" () {
-          let self = this;
-          this.commentList.forEach(function(v, i){
-              Vue.set(v, "isUp", self.chekcIsUp(v.ups))
-              Vue.set(v, "upBtn", {
-                  type: v.isUp && "on" || "off",
-                  on: "star-on",
-                  off: "star-off",
-                  load: "loading",
-                  lock: false, //防止用户多次点击
-                  switch (load) {
-                      this.type = load || "on";
-                  }
-              })
-          });
-      }
+  beforeCreate (){
+      this.commentList.forEach(function(v, i){
+          Vue.set(v, "isUp", this.chekcIsUp(v.ups))
+          Vue.set(v, "upBtn", {
+              type: v.isUp && "on" || "off",
+              on: "star-on",
+              off: "star-off",
+              load: "loading",
+              lock: false, //防止用户多次点击
+              switch (load) {
+                  this.type = load || "on";
+              }
+          })
+      });
   },
+  // watch: {
+  //     "commentList" () {
+  //         let self = this;
+  //         this.commentList.forEach(function(v, i){
+  //             Vue.set(v, "isUp", self.chekcIsUp(v.ups))
+  //             Vue.set(v, "upBtn", {
+  //                 type: v.isUp && "on" || "off",
+  //                 on: "star-on",
+  //                 off: "star-off",
+  //                 load: "loading",
+  //                 lock: false, //防止用户多次点击
+  //                 switch (load) {
+  //                     this.type = load || "on";
+  //                 }
+  //             })
+  //         });
+  //     }
+  // },
   computed: {},
   mounted () {},
   methods: {
@@ -113,7 +128,6 @@ export default {
                       accesstoken: self.user.accesstoken
                   }
               }).done((res) => {
-                  console.log(res);
                   if (!res || !res.success) {
                       //TODO 是否错误抛出  有待商榷
                       self.$message({
@@ -147,7 +161,6 @@ export default {
           if(!this.user.loginname){
               this.goLogin();
           }else{
-              console.log($("#answereditor" + this.flag));
               this.currentReplyId = (this.currentReplyId === commentId) ? "" : commentId;
           }
       },
