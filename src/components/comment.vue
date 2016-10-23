@@ -64,7 +64,7 @@ export default {
     }
   },
   props: ["topic", "commentList", "commentCount"],
-  beforeCreate (){
+  created (){
       this.commentList.forEach(function(v, i){
           Vue.set(v, "isUp", this.chekcIsUp(v.ups))
           Vue.set(v, "upBtn", {
