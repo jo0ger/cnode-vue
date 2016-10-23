@@ -18,7 +18,7 @@
                                     <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
                                     <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
                                     <span>{{topic.visit_count}} 次浏览</span>
-                                    <span>{{topic.replies.length}} 评论</span>
+                                    <span v-if="topic.replies">{{topic.replies.length}} 评论</span>
                                     <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
                                     <el-button class="editBtn actionBtn" type="text" @click.native="topicEdit" v-if="user.loginname && user.loginname == topic.author.loginname">
                                         <i class="el-icon-edit"></i>编辑
