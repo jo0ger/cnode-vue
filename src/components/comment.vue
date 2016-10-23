@@ -65,8 +65,19 @@ export default {
   },
   props: ["topic", "commentList", "commentCount"],
   created (){
+      console.log("created...");
+      let checkIsUp = (ups) => {
+          let result = "",
+              self = this;
+          result = ups.find((v) => {
+              if(v === self.user.id){
+                  return true;
+              }
+          });
+          return result && true || false;
+      };
       this.commentList.forEach(function(v, i){
-          Vue.set(v, "isUp", this.chekcIsUp(v.ups))
+          Vue.set(v, "isUp", checkIsUp(v.ups))
           Vue.set(v, "upBtn", {
               type: v.isUp && "on" || "off",
               on: "star-on",
@@ -169,7 +180,7 @@ export default {
           this.currentReplyId && (this.currentReplyId = "");
       },
       //检查评论是否被赞过
-      chekcIsUp (ups){
+      checkIsUp (ups){
           let result = "",
               self = this;
           result = ups.find((v) => {
