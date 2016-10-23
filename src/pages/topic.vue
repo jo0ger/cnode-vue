@@ -189,6 +189,7 @@ export default {
                     type: "success"
                 });
                 self.collectBtn.switch(isCollected && "off" || "on");
+                self.topic.is_collect = !isCollected;
                 self.collectBtn.lock = false;
             }).fail((error) => {
                 //TODO 是否错误抛出  有待商榷
