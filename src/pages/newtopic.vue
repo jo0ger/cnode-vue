@@ -131,6 +131,7 @@ export default {
   methods: {
       reset() {
         this.$refs.topicForm.resetFields();
+        simplemde.value("");
       },
       //新建主题
       submit() {
