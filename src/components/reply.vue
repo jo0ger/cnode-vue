@@ -6,11 +6,14 @@
 </template>
 
 <script>
-require("../assets/plugins/simplemde/simplemde.min.css");
-let Simplemde = require("../assets/plugins/simplemde/simplemde.min.js"),
-    markdown = require("markdown").markdown,
-    tool = require("../libs/tool");
-let simplemde = null;
+import "../assets/plugins/simplemde/simplemde.min.css";
+import Simplemde from "../assets/plugins/simplemde/simplemde.min.js";
+import tool from "../libs/tool";
+import Markdown from "markdown";
+
+let markdown = Markdown.markdown,
+    simplemde = null;
+
 export default {
     data() {
         return {
@@ -34,6 +37,9 @@ export default {
             this.placeholder = "您未登录，评论将暂存...";
             this.btnText = "登录后评论";
         }
+        // $("body").animate({
+		// 	scrollTop : $("body").offset().top
+		// }, 500)
     },
     mounted() {
         if(this.replyId){
@@ -83,7 +89,6 @@ export default {
                 //如果评论里的回复框一旦有一个以上打开过，则simplemde的codemirror将这个框的值映射过来
                 //导致话题评论框点击发表时，replyContent的值是刚打开过的评论回复框的值
                 replyContent = document.getElementById("answereditor" + this.flag).value || "";
-                console.log(replyContent);
                 if (!replyContent) {
                     self.$message({
                         showClose: true,

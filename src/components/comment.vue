@@ -37,11 +37,11 @@
                                     <p class="content" v-html="item.content">
                                     </p>
                                 </main>
-                                <cv-reply :topic.sync="topic"
+                                <cvReply :topic.sync="topic"
                                     :reply-id="item.id"
                                     :reply-to="item.author.loginname"
                                     @hideReplyPanel="hideReplyPanel"
-                                    v-if="currentReplyId === item.id"></cv-reply>
+                                    v-if="currentReplyId === item.id"></cvReply>
                             </section>
                         </article>
                     </main>
@@ -52,7 +52,9 @@
 </template>
 
 <script>
-let Vue = require("vue");
+import cvReply from "./reply.vue";
+import Vue from "vue";
+
 export default {
   data () {
     return {
@@ -193,7 +195,7 @@ export default {
       }
   },
   components: {
-      "cv-reply": require("./reply.vue"),
+      cvReply
   }
 }
 </script>

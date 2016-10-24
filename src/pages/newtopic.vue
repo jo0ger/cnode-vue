@@ -1,6 +1,6 @@
 <template lang="html">
     <div id="container">
-    <cv-head></cv-head>
+    <cvHead></cvHead>
     <main id="main">
         <el-row :gutter="20">
             <el-col :span="18" id="content" :offset="3">
@@ -37,16 +37,21 @@
             </el-col>
         </el-row>
     </main>
-    <cv-loading :showLoading="loading.showLoading"></cv-loading>
+    <cvLoading :showLoading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
-require("../assets/plugins/simplemde/simplemde.min.css");
-let Simplemde = require("../assets/plugins/simplemde/simplemde.min.js"),
-    markdown = require("markdown").markdown,
-    tool = require("../libs/tool");
-let simplemde = null;
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+
+import "../assets/plugins/simplemde/simplemde.min.css";
+import Simplemde from "../assets/plugins/simplemde/simplemde.min.js";
+import tool from "../libs/tool";
+import Markdown from "markdown";
+
+let markdown = Markdown.markdown,
+    simplemde = null;
 
 export default {
   data () {
@@ -248,8 +253,8 @@ export default {
       }
   },
   components: {
-      "cv-head": require("../components/header.vue"),
-      "cv-loading": require("../components/loading.vue"),
+      cvHead,
+      cvLoading,
   }
 }
 </script>

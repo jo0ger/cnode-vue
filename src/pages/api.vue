@@ -1,6 +1,6 @@
 <template lang="html">
     <div id="container">
-        <cv-head></cv-head>
+        <cvHead></cvHead>
         <main id="main">
             <el-row :gutter="20">
                 <el-col :span="18" id="content" :offset="3">
@@ -10,7 +10,9 @@
                                 <span>Api</span>
                             </header>
                             <main>
-                                暂未做好
+                                <section class="markdown-body" v-html="apiContent">
+
+                                </section>
                             </main>
                         </el-card>
                     </div>
@@ -21,15 +23,41 @@
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+
+let apimd = require("../assets/api.md"),
+    markdown = require("markdown").markdown;
 export default {
     data() {
-        return {}
+        return {
+            apiContent: ""
+        }
     },
     computed: {},
+    created (){
+        this.fetchApiPage();
+    },
     mounted() {},
-    methods: {},
+    methods: {
+        fetchApiPage (){
+            let self = this;
+            $.get(apimd)
+                .done(res => {
+                    if(!res){
+                        //TODO 错误抛出
+                        return;
+                    }
+                    let html = markdown.toHTML(res);
+                    self.apiContent = html;
+                })
+                .fail(error => {
+                    //TODO 错误抛出
+                })
+        }
+
+    },
     components: {
-        "cv-head": require("../components/header.vue")
+        cvHead
     }
 }
 </script>

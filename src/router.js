@@ -1,5 +1,12 @@
 "use strict";
 
+//require.ensure是webpack用来代码分割的，可以按需加载
+const newtopic = resolve => {
+    require.ensure(["./pages/newtopic.vue"], () => {
+        resolve(require("./pages/newtopic.vue"));
+    })
+};
+
 export default () => {
     return [{
         path: "/",
@@ -56,16 +63,12 @@ export default () => {
     }, {
         path: "/newtopic",
         name: "newtopic",
-        component: (resolve) => {
-            require(["./pages/newtopic.vue"], resolve);
-        },
+        component: newtopic,
         meta: { requiresAuth: true }
     }, {
         path: "/edittopic/:id",
         name: "edittopic",
-        component: (resolve) => {
-            require(["./pages/newtopic.vue"], resolve);
-        },
+        component: newtopic,
         meta: { requiresAuth: true }
     }];
 };

@@ -1,6 +1,6 @@
 <template lang="html">
   <div id="container">
-  <cv-head></cv-head>
+  <cvHead></cvHead>
   <main id="main" v-if="!topicerror">
       <el-row :gutter="20">
         <el-col :span="18">
@@ -15,7 +15,7 @@
                                 </div>
                                 <p class="topic-info">
                                     <span>发布于 {{topic.create_at | getDateFromNow}}</span>
-                                    <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cv-aside处 -->
+                                    <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cvAside处 -->
                                     <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
                                     <span>{{topic.visit_count}} 次浏览</span>
                                     <span v-if="topic.replies">{{topic.replies.length}} 评论</span>
@@ -35,7 +35,7 @@
                     </div>
                 </el-col>
             </el-row>
-            <cv-comment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cv-comment>
+            <cvComment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cvComment>
             <el-row  id="reply-panel" class="cv-panel">
                 <el-col :span="24" id="topic-detail">
                     <div class="grid-content bg-purple">
@@ -44,7 +44,7 @@
                                 <span>回复评论</span>
                             </div>
                             <main class="markdown-body reply-content">
-                                <cv-reply :topic.sync="topic"></cv-reply>
+                                <cvReply :topic.sync="topic"></cvReply>
                             </main>
                         </el-card>
                     </div>
@@ -53,19 +53,25 @@
         </el-col>
         <el-col :span="6">
             <div class="grid-content bg-purple">
-                <cv-aside :topic-id="topic.id"
+                <cvAside :topic-id="topic.id"
                     :hasRecent="true"
                     :author-name="topic.author.loginname"
-                    v-if="topic.author"></cv-aside>
+                    v-if="topic.author"></cvAside>
             </div>
         </el-col>
     </el-row>
   </main>
-  <cv-loading :show-loading="loading.showLoading"></cv-loading>
+  <cvLoading :show-loading="loading.showLoading"></cvLoading>
   </div>
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+import cvAside from  "../components/aside.vue";
+import cvComment  from "../components/comment.vue";
+import cvReply  from "../components/reply.vue";
+
 export default {
     data() {
         return {
@@ -234,13 +240,15 @@ export default {
         },
     },
     components: {
-        "cv-head": require("../components/header.vue"),
-        "cv-aside": require("../components/aside.vue"),
-        "cv-comment": require("../components/comment.vue"),
-        "cv-reply": require("../components/reply.vue"),
-        "cv-loading": require("../components/loading.vue")
+        cvHead,
+        cvAside,
+        cvComment,
+        cvReply,
+        cvLoading
     }
 }
+
+
 </script>
 
 <style lang="sass">

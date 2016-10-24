@@ -1,6 +1,6 @@
 <template lang="html">
 <div id="container">
-<cv-head></cv-head>
+<cvHead></cvHead>
 <main id="main">
     <el-row :gutter="20" id="container">
         <el-col :span="18" id="content" :offset="3">
@@ -14,11 +14,11 @@
                             <el-menu-item index="ask" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
                             <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
                         </el-menu>
-                        <cv-loading :showLoading="loading.showLoading"></cv-loading>
+                        <cvLoading :showLoading="loading.showLoading"></cvLoading>
                     </div>
-                    <cv-list :topics="topics"></cv-list>
+                    <cvList :topics="topics"></cvList>
                     <section class="page">
-                        <cv-page></cv-page>
+                        <!-- <cvPage></cvPage> -->
                     </section>
                 </el-card>
             </div>
@@ -30,11 +30,15 @@
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+import cvList from  "../components/list.vue";
+
 export default {
     data() {
         return {
             topics: [],
-            curTab: this.$route.query.tab || "",
+            curTab: this.$route.query.tab || "all",
             queryData: {
                 page: 1,
                 tab: "all",
@@ -58,7 +62,10 @@ export default {
         sessionStorage.setItem("tab", this.queryData.tab);
     },
     watch: {
-        "$route": "fetchTopics"
+        "$route" () {
+            this.curTab = this.$route.query.tab || "all";
+            this.fetchTopics();
+        }
     },
     mounted() {
         this.fetchTopics();
@@ -131,12 +138,13 @@ export default {
 
     },
     components: {
-        "cv-head": require("../components/header.vue"),
-        "cv-loading": require("../components/loading.vue"),
-        "cv-list": require("../components/list.vue"),
-        "cv-page": require("../components/page.vue")
+        cvHead,
+        cvLoading,
+        cvList
     }
 }
+
+
 </script>
 
 <style lang="sass">
