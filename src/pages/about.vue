@@ -10,7 +10,9 @@
                                 <span>关于</span>
                             </header>
                             <main>
-                                暂未做好
+                                <section class="markdown-body" v-html="aboutContent">
+
+                                </section>
                             </main>
                         </el-card>
                     </div>
@@ -22,14 +24,40 @@
 
 <script>
 import cvHead from "../components/header.vue";
+import Markdown from "markdown";
+import aboutmd from "../assets/about.md";
+
+const markdown = Markdown.markdown;
 
 export default {
     data() {
-        return {}
+        return {
+            aboutContent: ""
+        }
     },
     computed: {},
+    created (){
+        this.fetchAboutPage();
+    },
     mounted() {},
-    methods: {},
+    methods: {
+        fetchAboutPage (){
+            let self = this;
+            $.get(aboutmd)
+                .done(res => {
+                    if(!res){
+                        //TODO 错误抛出
+                        return;
+                    }
+                    let html = markdown.toHTML(res);
+                    self.aboutContent = html;
+                })
+                .fail(error => {
+                    //TODO 错误抛出
+                })
+        }
+
+    },
     components: {
         cvHead
     }

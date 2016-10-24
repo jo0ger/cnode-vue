@@ -1,6 +1,7 @@
 {
   "name": "cnode-vue",
   "description": "基于vue和vue-router构建",
+  "version": "1.0.0",
   "author": "bubblypoker",
   "private": true,
   "scripts": {

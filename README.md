@@ -16,8 +16,12 @@ npm install
 # 开发模式（localhost:8080，hot reload）
 npm run dev
 
-# 生产模式（JS压缩）
+# 生产模式（JS压缩，webpack）
 npm run build
+
+# 生产模式（JS，css压缩，webpack+gulp）
+npm run dist
+
 ```
 
 For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
