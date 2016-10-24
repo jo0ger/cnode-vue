@@ -23,16 +23,12 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import cvHead from "../components/header.vue";
+import Markdown from "markdown";
+import apimd from "../assets/api.md";
 
-let apimd = require("../assets/api.md"),
-    markdown = require("markdown").markdown;
-=======
-let apimd = require("../assets/api.md");
-console.log(apimd);
-let markdown = require("markdown").markdown;
->>>>>>> 276e568e229bf0849e45458f5cef00f1c63fe3e3
+const markdown = Markdown.markdown;
+
 export default {
     data() {
         return {
