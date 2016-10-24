@@ -36,7 +36,7 @@ export default {
     },
     computed: {},
     created() {
-        if (this.user.loginname && !this.user.score)
+        if (this.user.loginname)
             this.fetchUserInfo();
         if (this.user.loginname)
             this.fetchMessage();
