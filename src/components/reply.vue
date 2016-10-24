@@ -6,11 +6,14 @@
 </template>
 
 <script>
-require("../assets/plugins/simplemde/simplemde.min.css");
-let Simplemde = require("../assets/plugins/simplemde/simplemde.min.js"),
-    markdown = require("markdown").markdown,
-    tool = require("../libs/tool");
-let simplemde = null;
+import "../assets/plugins/simplemde/simplemde.min.css";
+import Simplemde from "../assets/plugins/simplemde/simplemde.min.js";
+import tool from "../libs/tool";
+import Markdown from "markdown";
+
+let markdown = Markdown.markdown,
+    simplemde = null;
+
 export default {
     data() {
         return {

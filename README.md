@@ -16,7 +16,7 @@ npm install
 # 开发模式（localhost:8080，hot reload）
 npm run dev
 
-# 发布代码模式（JS压缩）
+# 生产模式（JS压缩）
 npm run build
 ```
 

@@ -7,9 +7,9 @@
 
 <script>
 import cvBacktotop from "./components/backToTop.vue";
-require("./assets/scss/normalize.scss");
-require("./assets/scss/common.scss");
-require("./assets/css/github-markdown.css");
+import "./assets/scss/normalize.scss";
+import "./assets/scss/common.scss";
+import "./assets/css/github-markdown.css";
 export default {
   data () {
     return {

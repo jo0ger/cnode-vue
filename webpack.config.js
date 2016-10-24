@@ -1,7 +1,7 @@
 var path = require('path'),
     webpack = require('webpack'),
     ExtracTextPlugin = require("extract-text-webpack-plugin"),
-    HtmlWebpackPlugin = require('html-webpack-plugin')
+    HtmlWebpackPlugin = require('html-webpack-plugin'),
     CleanWebpackPlugin = require('clean-webpack-plugin')
 
 var isProduction = function() {
@@ -10,19 +10,23 @@ var isProduction = function() {
 
 var publicPath = "/dist/",
     filename = "build.js";
-// if (isProduction()) {
-//     publicPath = "/dist/";
-//     filename = "build.js";
-// }
+if (isProduction()) {
+    //这里得加上项目名称
+    publicPath = "/cnode-vue/dist/";
+    filename = "build-[hash:8].js";
+}
 
 module.exports = {
     debug: true,
-    entry: ["./src/main.js"],
+    entry: {
+        main: "./src/main.js",
+        common: ["jquery", "vue", "vue-router", "./src/assets/plugins/simplemde/simplemde.min.js"]
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
         publicPath: publicPath,
         filename: filename,
-        chunkFilename:"[id].build.js?[chunkhash]"
+        chunkFilename:"[id].build-[hash:8].js"
     },
     resolveLoader: {
         root: path.join(__dirname, 'node_modules'),
@@ -58,27 +62,34 @@ module.exports = {
             loader: 'file'
         }, {
             test: /\.md$/,
-            loader: 'file'
+            loader: 'file',
+            query: {
+                name: "[name].[ext]?[hash]"
+            }
         }]
     },
     plugins: [
         //提取公共代码，在有多个entry时，这些入口文件可能会有一些公共代码
+        //将entry中common包含的文件提取到公共js中
         new webpack.optimize.CommonsChunkPlugin({
-            name: "commons",
-            filename: "commons.js"
+            name: ["common"],
+            filename: isProduction() && "common-[hash:8].js" || "common.js",
+            minChunks: Infinity
         }),
         new ExtracTextPlugin({
-            filename: "style.css",
+            filename: isProduction() && "style-[hash].css" || "style.css",
             allChunks: true,
             disable: false
         }),
+        //设置全局变量$
         new webpack.ProvidePlugin({
             $: "jquery"
         }),
-        // new HtmlWebpackPlugin({
-        //     filename: "../index.html",
-        //     template: "./index_dev.html"
-        // })
+        //将上面生成的js和css的引用追加到index_dev.html中，并重新生成index.html
+        new HtmlWebpackPlugin({
+            filename: "../index.html",
+            template: "./index_dev.html"
+        })
     ],
     devServer: {
         historyApiFallback: true,
@@ -91,7 +102,7 @@ if (isProduction()) {
     module.exports.devtool = '#source-map'
         // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
-        new CleanWebpackPlugin(["dist"], {
+        new CleanWebpackPlugin(["./dist"], {
             "verbose": true,            //log到console
         }),
         new webpack.DefinePlugin({
@@ -99,6 +110,7 @@ if (isProduction()) {
                 NODE_ENV: '"production"'
             }
         }),
+        //JS压缩
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false

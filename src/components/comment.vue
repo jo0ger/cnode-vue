@@ -53,8 +53,8 @@
 
 <script>
 import cvReply from "./reply.vue";
+import Vue from "vue";
 
-let Vue = require("vue");
 export default {
   data () {
     return {
