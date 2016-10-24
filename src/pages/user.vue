@@ -1,6 +1,6 @@
 <template lang="html">
     <div id="container">
-        <cv-head></cv-head>
+        <cvHead></cvHead>
         <main id="main">
             <el-row :gutter="20">
               <el-col :span="18">
@@ -44,7 +44,7 @@
                                       </div>
                                   </div>
                                   <main class="recent_topics">
-                                      <cv-list :topics="user.recent_topics" :hideCount="hideCount"></cv-list>
+                                      <cvList :topics="user.recent_topics" :hideCount="hideCount"></cvList>
                                   </main>
                               </el-card>
                           </div>
@@ -60,7 +60,7 @@
                                       </div>
                                   </div>
                                   <main class="recent_replies">
-                                      <cv-list :topics="user.recent_replies"  :hideCount="hideCount"></cv-list>
+                                      <cvList :topics="user.recent_replies"  :hideCount="hideCount"></cvList>
                                   </main>
                               </el-card>
                           </div>
@@ -69,16 +69,21 @@
               </el-col>
               <el-col :span="6">
                   <div class="grid-content bg-purple">
-                      <cv-aside :author-name="loginname" :hasRecent="false" v-if="loginname"></cv-aside>
+                      <cvAside :author-name="loginname" :hasRecent="false" v-if="loginname"></cvAside>
                   </div>
               </el-col>
           </el-row>
         </main>
-        <cv-loading :show-loading="loading.showLoading"></cv-loading>
+        <cvLoading :show-loading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+import cvList from  "../components/list.vue";
+import cvAside from  "../components/aside.vue";
+
 export default {
     data() {
         return {
@@ -133,10 +138,10 @@ export default {
         }
     },
     components: {
-        "cv-head": require("../components/header.vue"),
-        "cv-aside": require("../components/aside.vue"),
-        "cv-list": require("../components/list.vue"),
-        "cv-loading": require("../components/loading.vue")
+        cvHead,
+        cvAside,
+        cvList,
+        cvLoading
     }
 }
 </script>

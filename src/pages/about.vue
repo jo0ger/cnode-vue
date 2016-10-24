@@ -1,6 +1,6 @@
 <template lang="html">
     <div id="container">
-        <cv-head></cv-head>
+        <cvHead></cvHead>
         <main id="main">
             <el-row :gutter="20">
                 <el-col :span="18" id="content" :offset="3">
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+
 export default {
     data() {
         return {}
@@ -29,7 +31,7 @@ export default {
     mounted() {},
     methods: {},
     components: {
-        "cv-head": require("../components/header.vue")
+        cvHead
     }
 }
 </script>

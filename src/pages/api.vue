@@ -1,6 +1,6 @@
 <template lang="html">
     <div id="container">
-        <cv-head></cv-head>
+        <cvHead></cvHead>
         <main id="main">
             <el-row :gutter="20">
                 <el-col :span="18" id="content" :offset="3">
@@ -23,9 +23,10 @@
 </template>
 
 <script>
-let apimd = require("../assets/api.md");
-console.log(apimd);
-let markdown = require("markdown").markdown;
+import cvHead from "../components/header.vue";
+
+let apimd = require("../assets/api.md"),
+    markdown = require("markdown").markdown;
 export default {
     data() {
         return {
@@ -56,7 +57,7 @@ export default {
 
     },
     components: {
-        "cv-head": require("../components/header.vue")
+        cvHead
     }
 }
 </script>

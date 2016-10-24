@@ -1,26 +1,22 @@
 <template lang="html">
     <div>
         <router-view></router-view>
-        <cv-backtotop></cv-backtotop>
+        <cvBacktotop></cvBacktotop>
     </div>
 </template>
 
 <script>
+import cvBacktotop from "./components/backToTop.vue";
 require("./assets/scss/normalize.scss");
 require("./assets/scss/common.scss");
 require("./assets/css/github-markdown.css");
-
 export default {
   data () {
     return {
     }
   },
-  computed: {},
-  mounted () {},
-  methods: {
-  },
   components: {
-      "cv-backtotop": require("./components/backToTop.vue")
+      cvBacktotop
   }
 }
 </script>

@@ -86,7 +86,6 @@ export default {
                 //如果评论里的回复框一旦有一个以上打开过，则simplemde的codemirror将这个框的值映射过来
                 //导致话题评论框点击发表时，replyContent的值是刚打开过的评论回复框的值
                 replyContent = document.getElementById("answereditor" + this.flag).value || "";
-                console.log(replyContent);
                 if (!replyContent) {
                     self.$message({
                         showClose: true,
