@@ -10,7 +10,9 @@
                                 <span>Api</span>
                             </header>
                             <main>
-                                暂未做好
+                                <section class="markdown-body" v-html="apiContent">
+
+                                </section>
                             </main>
                         </el-card>
                     </div>
@@ -21,13 +23,38 @@
 </template>
 
 <script>
+let apimd = require("../assets/api.md");
+console.log(apimd);
+let markdown = require("markdown").markdown;
 export default {
     data() {
-        return {}
+        return {
+            apiContent: ""
+        }
     },
     computed: {},
+    created (){
+        this.fetchApiPage();
+    },
     mounted() {},
-    methods: {},
+    methods: {
+        fetchApiPage (){
+            let self = this;
+            $.get(apimd)
+                .done(res => {
+                    if(!res){
+                        //TODO 错误抛出
+                        return;
+                    }
+                    let html = markdown.toHTML(res);
+                    self.apiContent = html;
+                })
+                .fail(error => {
+                    //TODO 错误抛出
+                })
+        }
+
+    },
     components: {
         "cv-head": require("../components/header.vue")
     }

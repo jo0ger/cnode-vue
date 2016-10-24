@@ -7,7 +7,8 @@ module.exports = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '/cnode-vue/dist/',
+    // publicPath: '/cnode-vue/dist/',
+    publicPath: "/dist/",
     filename: 'build.js'
   },
   resolveLoader: {
@@ -47,6 +48,10 @@ module.exports = {
       },
       {
         test: /\.(eot|ttf|woff)$/,
+        loader: 'file'
+      },
+      {
+        test: /\.md$/,
         loader: 'file'
       }
     ]

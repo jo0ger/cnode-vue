@@ -18,7 +18,7 @@
                     </div>
                     <cv-list :topics="topics"></cv-list>
                     <section class="page">
-                        <cv-page></cv-page>
+                        <!-- <cv-page></cv-page> -->
                     </section>
                 </el-card>
             </div>
