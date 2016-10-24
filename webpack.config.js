@@ -26,7 +26,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         publicPath: publicPath,
         filename: filename,
-        chunkFilename:"[id].build-[hash:8].js"
+        chunkFilename: "[id].build-[hash:8].js"
     },
     resolveLoader: {
         root: path.join(__dirname, 'node_modules'),
@@ -77,7 +77,7 @@ module.exports = {
             minChunks: Infinity
         }),
         new ExtracTextPlugin({
-            filename: isProduction() && "style-[hash].css" || "style.css",
+            filename: isProduction() && "style-[hash:8].css" || "style.css",
             allChunks: true,
             disable: false
         }),
@@ -103,7 +103,7 @@ if (isProduction()) {
         // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
         new CleanWebpackPlugin(["./dist"], {
-            "verbose": true,            //log到console
+            "verbose": true, //log到console
         }),
         new webpack.DefinePlugin({
             'process.env': {
