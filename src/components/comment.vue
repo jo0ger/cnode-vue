@@ -166,7 +166,6 @@ export default {
                       message: "操作失败",
                       type: "warning"
                   });
-                  return;
               });
           }
       },

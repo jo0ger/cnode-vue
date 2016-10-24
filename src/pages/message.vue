@@ -12,6 +12,7 @@
                                       <div>
                                          <span>新消息</span>
                                          <el-badge :value="messages.hasnot_read_messages.length" :max="99" class="mark"></el-badge>
+                                         <el-button style="float:right;" @click.native="markAll">全部已读</el-button>
                                       </div>
                                   </div>
                                   <main class="hasnot-read-messages messages">
@@ -113,7 +114,8 @@ export default {
             hide() {
                 this.showLoading = false;
             }
-        }
+        },
+        switchs: ""
     }
   },
   computed: {},
@@ -127,7 +129,7 @@ export default {
       //获取已读和未读消息
       fetchMessages () {
           this.loading.show();
-          var self = this;
+          let self = this;
           $.ajax({
               url: "https://cnodejs.org/api/v1/messages",
               type: "GET",
@@ -154,6 +156,55 @@ export default {
                   message: "数据获取失败，请稍后再试！",
                   type: "warning"
               })
+          });
+      },
+      //消息全部已读
+      markAll (){
+          if(!this.user.accesstoken){
+            return;
+          }
+          if(this.messages.hasnot_read_messages.length < 1){
+              this.$message({
+                  showClose: true,
+                  message: "暂无未读消息",
+                  type: "info"
+              });
+              return;
+          }
+          this.loading.show();
+          let self = this;
+          $.ajax({
+              url: "https://cnodejs.org/api/v1/message/mark_all",
+              type: "POST",
+              dataType: "json",
+              data: {
+                  accesstoken: self.user.accesstoken
+              }
+          }).done((res) => {
+              self.loading.hide();
+              console.log(res);
+              if(!res || !res.success){
+                  self.$message({
+                      showClose: true,
+                      message: "操作失败",
+                      type: "warning"
+                  });
+                  return;
+              }
+              self.messages.has_read_messages = self.messages.hasnot_read_messages.concat(self.messages.has_read_messages);
+              self.messages.hasnot_read_messages = [];
+              self.$message({
+                  showClose: true,
+                  message: "消息全部设置已读！",
+                  type: "success"
+              });
+          }).fail((error) => {
+              self.loading.hide();
+              self.$message({
+                  showClose: true,
+                  message: "操作失败",
+                  type: "warning"
+              });
           });
       }
   },
