@@ -17,7 +17,7 @@
 # 安装依赖
 npm install
 
-# 开发模式（localhost:8080，hot reload）
+# 开发模式（localhost:8080/index_dev.html，hot reload）
 npm run dev
 
 # 生产模式（JS压缩，webpack）

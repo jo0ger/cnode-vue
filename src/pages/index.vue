@@ -58,9 +58,6 @@ export default {
         };
     },
     computed: {},
-    created: function() {
-        sessionStorage.setItem("tab", this.queryData.tab);
-    },
     watch: {
         "$route" () {
             this.curTab = this.$route.query.tab || "all";
@@ -68,15 +65,48 @@ export default {
         }
     },
     mounted() {
-        this.fetchTopics();
+        //从别的页进入主页，且tab相同，则加载缓存数据
+        //这里我在想如果sessionStorage里有curTab，要不要点击首页时重定向到curTab？
+        //待定待定
+        console.log(sessionStorage.curTab + "---" + this.curTab);
+        if(sessionStorage.queryData && sessionStorage.curTab === this.curTab){
+            this.topics = JSON.parse(sessionStorage.topics || "[]");
+            this.queryData = JSON.parse(sessionStorage.queryData || this.queryData);
+            let scrollTop = sessionStorage.scrollTop || 0;
+            this.$nextTick(() => {
+                console.log(scrollTop);
+                window.scrollTo(0, scrollTop);
+            });
+        }else{
+            this.fetchTopics();
+        }
         //上拉加载
-        window.addEventListener("scroll", (e) => {
-          this.scrollLoad();
-      });
+        $(window).on("scroll", (e) => {
+            this.scrollLoad();
+        });
+        sessionStorage.removeItem("curTab");
+        sessionStorage.removeItem("topics");
+        sessionStorage.removeItem("queryData");
+        sessionStorage.removeItem("scrollTop");
+
+    },
+    beforeRouteLeave (to, from, next) {
+        //如果从首页进入用户详情和话题详情页面的话，将当前话题，滚动条高度，当前queryData缓存进sessionStorage
+        //因为其他例如api,about,newtopic页面都是在顶部才能进去
+        //后续如果header fixed的话，可以把限制条件去掉
+        if(to.name === "user" || to.name === "topic"){
+            sessionStorage.curTab = from.query.tab || "all";
+            sessionStorage.topics = JSON.stringify(this.topics);
+            sessionStorage.queryData = JSON.stringify(this.queryData);
+            sessionStorage.scrollTop = window.scrollY || 0;
+        }
+        $(window).off("scroll");
+        next();
     },
     methods: {
         fetchTopics() {
             this.loading.show();
+            this.scrollLock = true;
             let tab = this.$route.query.tab || "all",
                 tabdiff = tab === this.queryData.tab;
             this.queryData.tab = tab;
@@ -86,7 +116,7 @@ export default {
                 data: this.queryData
             }).done((data) => {
                 this.loading.hide();
-                this.scrollLock = true;
+                this.scrollLock = false;
                 if (!data || !data.success) {
                     //TODO 错误抛出
                     return;
@@ -120,11 +150,9 @@ export default {
             } else {
                 return "";
             }
-
-
         },
         scrollLoad: function(){
-          if(!this.scrollLock)
+          if(this.scrollLock)
             return;
           let body = document.body,
               height = body.clientHeight + body.scrollTop,

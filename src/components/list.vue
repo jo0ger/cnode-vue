@@ -26,7 +26,8 @@ export default {
   },
   props: ["topics", "hideCount"], //hideCount是否隐藏浏览量及回复量，因为在用户主页上api没有返回这两项
   computed: {},
-  mounted () {},
+  mounted () {
+  },
   methods: {},
   components: {}
 }

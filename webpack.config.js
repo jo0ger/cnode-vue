@@ -8,6 +8,10 @@ var isProduction = function() {
     return process.env.NODE_ENV === "production";
 };
 
+var isDev = function(){
+    return process.env.NODE_ENV === "development";
+};
+
 var publicPath = "/dist/",
     filename = "build.js";
 if (isProduction()) {
@@ -84,12 +88,8 @@ module.exports = {
         //设置全局变量$
         new webpack.ProvidePlugin({
             $: "jquery"
-        }),
-        //将上面生成的js和css的引用追加到index_dev.html中，并重新生成index.html
-        new HtmlWebpackPlugin({
-            filename: "../index.html",
-            template: "./index_dev.html"
         })
+
     ],
     devServer: {
         historyApiFallback: true,
@@ -115,6 +115,11 @@ if (isProduction()) {
             compress: {
                 warnings: false
             }
+        }),
+        //将上面生成的js和css的引用追加到index_dev.html中，并重新生成index.html
+        new HtmlWebpackPlugin({
+            filename: "../index.html",
+            template: "./src/html-tpl/tpl.html"
         })
     ])
 }

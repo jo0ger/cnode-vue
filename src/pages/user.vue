@@ -43,7 +43,7 @@
                                          <span>最近创建的话题</span>
                                       </div>
                                   </div>
-                                  <main class="recent_topics">
+                                  <main class="new_topics">
                                       <cvList :topics="user.recent_topics" :hideCount="hideCount"></cvList>
                                   </main>
                               </el-card>
@@ -61,6 +61,22 @@
                                   </div>
                                   <main class="recent_replies">
                                       <cvList :topics="user.recent_replies"  :hideCount="hideCount"></cvList>
+                                  </main>
+                              </el-card>
+                          </div>
+                      </el-col>
+                  </el-row>
+                  <el-row class="cv-panel">
+                      <el-col :span="24">
+                          <div class="grid-content bg-purple">
+                              <el-card class="box-card">
+                                  <div slot="header" class="clearfix">
+                                      <div>
+                                         <span>收藏的话题</span>
+                                      </div>
+                                  </div>
+                                  <main class="collect_topics">
+                                      <cvList :topics="collectedTopics"></cvList>
                                   </main>
                               </el-card>
                           </div>
@@ -89,6 +105,7 @@ export default {
         return {
             loginname: this.$route.params.name || "",
             user: {},
+            collectedTopics: [],
             loading: {
                 showLoading: false,
                 show() {
@@ -105,6 +122,7 @@ export default {
     created (){
         if (this.loginname) {
             this.fetchUserInfo();
+            this.fetchCollectedTopics();
         }
     },
     mounted() {},
@@ -114,6 +132,7 @@ export default {
             if(to.name === from.name){
                 this.loginname = to.params.name;
                 this.fetchUserInfo();
+                this.fetchCollectedTopics();
             }
         }
     },
@@ -135,6 +154,42 @@ export default {
             }).fail((error) => {
                 //TODO 是否错误抛出  有待商榷
             });
+        },
+        //获取收藏话题
+        fetchCollectedTopics (){
+            let self = this;
+            $.ajax({
+                url: "https://cnodejs.org/api/v1/topic_collect/" + self.loginname,
+                type: "GET",
+            }).done((res) => {
+                if (!res || !res.success) {
+                    //TODO 是否错误抛出  有待商榷
+                    return;
+                }
+                res.data.forEach((v, i) => {
+                    v.typeClass = self.getTypeClass(v.top, v.good, v.tab);
+                });
+                this.collectedTopics = res.data;
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+            });
+        },
+        getTypeClass(top, good, tab) {
+            if (top) {
+                return "success";
+            } else if ( good) {
+                return "danger";
+            } else if (tab == "ask") {
+                return "primary";
+            } else if (tab == "job") {
+                return "warning";
+            } else if (tab == "share") {
+                return "gray";
+            }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+                return "hidden";
+            } else {
+                return "";
+            }
         }
     },
     components: {
