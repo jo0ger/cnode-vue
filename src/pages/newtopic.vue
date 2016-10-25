@@ -158,7 +158,7 @@ export default {
                           accesstoken: self.user.accesstoken,
                           tab: self.topicForm.tab,
                           title: self.topicForm.title,
-                          content: simplemde.value()
+                          content: content + self.tagText
                       },
                       queryUrl = "https://cnodejs.org/api/v1/topics";
                   if(self.editTopic.id){
