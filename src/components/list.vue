@@ -1,6 +1,6 @@
 <template lang="html">
     <section class="article-list">
-        <article class="topic" v-for="item in topics">
+        <article class="topic" v-for="item in topics" v-if="topics.length">
             <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
                 <img :src="item.author.avatar_url" alt="" />
             </router-link>
@@ -16,6 +16,7 @@
             <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
             <span class="last-reply-time" v-if="item.create_at">发布于 {{ item.create_at | getDateFromNow }}</span>
         </article>
+        <span v-else>暂无</span>
     </section>
 </template>
 
