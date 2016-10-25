@@ -10,7 +10,7 @@
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <div class="topic-title">
-                                    <el-tag :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
+                                    <el-tag v-if="topic.typeClass" :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
                                     <h1 v-text="topic.title" class="title"></h1>
                                 </div>
                                 <p class="topic-info">
@@ -231,7 +231,7 @@ export default {
             } else if (tab == "job") {
                 return "warning";
             } else if (tab == "share") {
-                return "";
+                return "gray";
             } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {

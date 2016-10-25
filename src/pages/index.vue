@@ -114,7 +114,7 @@ export default {
             } else if (tab == "job") {
                 return "warning";
             } else if (tab == "share") {
-                return "";
+                return "gray";
             }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {
