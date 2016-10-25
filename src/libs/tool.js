@@ -1,5 +1,6 @@
 "use strict";
 
+let lodash = require('lodash');
 /**
  * [formatDate description]
  * @type {Object}
@@ -9,8 +10,8 @@ exports.formatDate = {
         if (ms.toString().length === 10) {
             ms = ms * 1000;
         }
-        var d = new Date(ms),
-            format = format || "yyyy-MM-dd hh:mm:ss",
+        format = format || "yyyy-MM-dd hh:mm:ss";
+        let d = new Date(ms),
             year = d.getFullYear(),
             month = d.getMonth() + 1,
             day = d.getDate(),
@@ -18,13 +19,19 @@ exports.formatDate = {
             minute = d.getMinutes(),
             seconds = d.getSeconds();
 
-
+        let addPrefix = function(source){
+            if(source < 10){
+                return "0" + source;
+            }else {
+                return source;
+            }
+        };
         format = format.replace("yyyy", year)
-            .replace("MM", month)
-            .replace("dd", day)
-            .replace("hh", hour)
-            .replace("mm", minute)
-            .replace("ss", seconds);
+            .replace("MM", addPrefix(month))
+            .replace("dd", addPrefix(day))
+            .replace("hh", addPrefix(hour))
+            .replace("mm", addPrefix(minute))
+            .replace("ss", addPrefix(seconds));
         return format;
     }
 };
@@ -88,7 +95,7 @@ exports.fetchUsers = function(text) {
             names.push(s);
         }
     }
-    names = _.uniq(names);
+    names = lodash.uniq(names);
     return names;
 };
 
@@ -98,8 +105,7 @@ exports.fetchUsers = function(text) {
  * @param {Function} callback 回调函数
  */
 exports.linkUsers = function(text) {
-    var users = fetchUsers(text);
-    console.log(users);
+    var users = this.fetchUsers(text);
     for (var i = 0, l = users.length; i < l; i++) {
         var name = users[i];
         text = text.replace(new RegExp('@' + name + '\\b(?!\\])', 'g'), '[@' + name + '](/user/' + name + ')');

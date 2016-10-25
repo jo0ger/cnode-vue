@@ -1,365 +1,286 @@
 <template lang="html">
-  <div>
-      <cv-head></cv-head>
-      <main id="main">
-        <cv-aside :username="topic.author.loginname" :avatar="topic.author.avatar_url" :userid="topic.author_id"></cv-aside>
-        <div class="content" id="content">
-          <div class="panel" id="topic-panel">
-            <header id="topic-header">
-              <span id="header-title">
-                <span :class="['type', topic.type]">{{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
-                <span class="topic-title" v-text="topic.title"></span>
-              </span>
-              <div class="infos">
-                <span class="info">发布于 {{ topic.create_at | getDateFromNow }}</span>
-                <span class="info">作者 {{ topic.author.loginname }}</span>
-                <span class="info">{{ topic.visit_count }} 次浏览</span>
-                <span class="info">来自 {{ topic.tab | getTypeName }}</span>
-              </div>
-            </header>
-            <main id="topic-container">
-              <section class="markdown-body topic-content" v-html="topic.content">
-
-              </section>
-            </main>
-          </div>
-          <div class="panel" id="comment-panel" v-if="topic.replies">
-              <section class="topic-comment">
-                  <header id="comment-header" class="panel-header">
-                    <span v-text=" topic.reply_count + '条回复'" v-if="topic.reply_count"></span>
-                  </header>
-                  <main id="comment-content" class="comments content">
-                      <article class="comment" v-for="comment in topic.replies">
-                          <router-link :to="{name:'user', params: {loginname: comment.author.loginname}}" class="comment-img">
-                            <img :src="comment.author.avatar_url" alt="" />
-                            <span v-text="comment.author.loginname" class="comment-username"></span>
-                          </router-link>
-                          <div class="comment-body">
-                            <div class="text markdown-body">
-                              <p v-html="comment.content">111</p>
+  <div id="container">
+  <cvHead></cvHead>
+  <main id="main" v-if="!topicerror">
+      <el-row :gutter="20">
+        <el-col :span="18">
+            <el-row>
+                <el-col :span="24" id="topic-detail">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <div class="topic-title">
+                                    <el-tag :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
+                                    <h1 v-text="topic.title" class="title"></h1>
+                                </div>
+                                <p class="topic-info">
+                                    <span>发布于 {{topic.create_at | getDateFromNow}}</span>
+                                    <!-- 这里必须加v-if="topic.author" 不然console会报错，暂不清楚为什么 还有下面cvAside处 -->
+                                    <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
+                                    <span>{{topic.visit_count}} 次浏览</span>
+                                    <span v-if="topic.replies">{{topic.replies.length}} 评论</span>
+                                    <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
+                                    <el-button class="editBtn actionBtn" type="text" @click.native="topicEdit" v-if="user.loginname && user.loginname == topic.author.loginname">
+                                        <i class="el-icon-edit"></i>编辑
+                                    </el-button>
+                                    <el-button class="collectBtn actionBtn" type="text" @click.native="topicCollect" v-if="user.loginname">
+                                        <i :class="collectBtn[collectBtn.type]"></i>
+                                        {{ topic.is_collect && '已' || ''}}收藏
+                                    </el-button>
+                                </p>
                             </div>
-                            <p class="attribution"><span class="time">发布于 {{ comment.create_at | formatDate }}</span></p>
-                          </div>
-                        </article>
-                  </main>
-              </section>
-          </div>
-
-          <div class="panel" id="reply-panel" v-if="topic.replies">
-              <section class="topic-reply">
-                  <header id="reply-header" class="panel-header">
-                      <span>添加回复</span>
-                  </header>
-                  <main id="reply-container">
-                      <textarea id="reply-content" rows="8" class="text"
-                          v-model="reply_content"
-                          placeholder='回复支持Markdown语法,请注意标记代码'>
-                      </textarea>
-                      <a href="javascript:" id="reply" @click="reply">回复</a>
-                  </main>
-              </section>
-          </div>
-
-        </div>
-      </main>
-    <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
+                            <main class="markdown-body topic-content" v-html="topic.content">
+                            </main>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+            <cvComment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cvComment>
+            <el-row  id="reply-panel" class="cv-panel">
+                <el-col :span="24" id="topic-detail">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>回复评论</span>
+                            </div>
+                            <main class="markdown-body reply-content">
+                                <cvReply :topic.sync="topic"></cvReply>
+                            </main>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-col>
+        <el-col :span="6">
+            <div class="grid-content bg-purple">
+                <cvAside :topic-id="topic.id"
+                    :hasRecent="true"
+                    :author-name="topic.author.loginname"
+                    v-if="topic.author"></cvAside>
+            </div>
+        </el-col>
+    </el-row>
+  </main>
+  <cvLoading :show-loading="loading.showLoading"></cvLoading>
   </div>
 </template>
 
 <script>
-let tool = require("../libs/tool"),
-    markdown = require("markdown").markdown;
-    console.log(markdown);
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+import cvAside from  "../components/aside.vue";
+import cvComment  from "../components/comment.vue";
+import cvReply  from "../components/reply.vue";
+
 export default {
-  data () {
-    return {
-      topicId: this.$route.params.id || "",
-      topic: {
-          author: {} //去掉后会报错，不清楚为什么
-      },
-      reply_content: "",
-      loading: {
-        showLoading: false,
-        content: "loading...",
-        show () {
-          this.showLoading = true;
+    data() {
+        return {
+            topic: {
+                id: this.$route.params.id,
+                author: {
+                    loginname:""
+                }
+            },
+            collectBtn: {
+                type: "off",
+                on: "el-icon-star-on",
+                off: "el-icon-star-off",
+                load: "el-icon-loading",
+                lock: false, //防止用户多次点击
+                switch (load) {
+                    this.type = load || "on";
+                }
+            },
+            user: {
+                accesstoken: localStorage.accesstoken || "",
+                loginname: localStorage.loginname || ""
+            },
+            loading: {
+                showLoading: false,
+                show() {
+                    this.showLoading = true;
+                },
+                hide() {
+                    this.showLoading = false;
+                }
+            },
+            topicerror: false
+        }
+    },
+    computed: {},
+    created() {
+        this.fetchTopicData();
+    },
+    mounted() {},
+    watch: {
+        "$route" (to, from) {
+            //如果路由从一个主题进入到另一个主题，此时只改变了hash，因此需要异步加载主题详情
+            if(to.name === from.name){
+                this.topic.id = to.params.id;
+                this.collectBtn.type = "off";
+                this.fetchTopicData();
+            }
+        }
+    },
+    methods: {
+        //获取主题详情
+        fetchTopicData() {
+            let self = this;
+            self.loading.show();
+            $.ajax({
+                url: "https://cnodejs.org/api/v1/topic/" + self.topic.id,
+                type: "GET",
+                dataType: "json",
+                data: {
+                    mdrender: true,
+                    accesstoken: self.user.accesstoken
+                }
+            }).done((res) => {
+                self.loading.hide();
+                if (!res || !res.success) {
+                    //TODO 是否错误抛出  有待商榷
+                    return;
+                }
+                self.topic = res.data || self.topic;
+                self.topic.typeClass = this.getTypeClass(self.topic.top, self.topic.good, self.topic.tab)
+                if (self.topic.is_collect) {
+                    self.collectBtn.type = "on";
+                }
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+                self.loading.hide();
+                self.topicerror = true;
+                self.$message({
+                  showClose: true,
+                  message: JSON.parse(error.responseText).error_msg || "获取数据失败",
+                  type: "warning"
+                });
+            });
         },
-        hide () {
-          this.showLoading = false;
-        }
+        //收藏主题
+        topicCollect() {
+            if (this.collectBtn.lock) {
+                return;
+            }
+            let self = this,
+                url = "https://cnodejs.org/api/v1/topic_collect/collect",
+                isCollected = self.collectBtn.type === "on";
+            self.collectBtn.switch("load");
+            self.collectBtn.lock = true;
+            //取消收藏的url
+            if (isCollected) {
+                url = "https://cnodejs.org/api/v1/topic_collect/de_collect";
+            }
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                data: {
+                    topic_id: self.topic.id,
+                    accesstoken: self.user.accesstoken
+                }
+            }).done((res) => {
+                if (!res || !res.success) {
+                    //TODO 是否错误抛出  有待商榷
+                    self.$message({
+                        showClose: true,
+                        message: "操作失败",
+                        type: "warning"
+                    });
+                    return;
+                }
+                self.$message({
+                    showClose: true,
+                    message: (isCollected && "取消" || "") + "收藏成功",
+                    type: "success"
+                });
+                self.collectBtn.switch(isCollected && "off" || "on");
+                self.topic.is_collect = !isCollected;
+                self.collectBtn.lock = false;
+            }).fail((error) => {
+                //TODO 是否错误抛出  有待商榷
+                self.error = true;
+                self.$message({
+                    showClose: true,
+                    message: "操作失败",
+                    type: "warning"
+                });
+            });
+        },
+        //编辑主题
+        topicEdit (){
+            if(!this.user.accesstoken){
+                this.$router.push({name: "login", query: {redirect: encodeURIComponent(this.$route.path)}});
+            }else{
+                let editTopic = {
+                    tab: this.topic.tab,
+                    title: this.topic.title,
+                    content: ""
+                };
+                localStorage.editTopic = JSON.stringify(editTopic);
+                this.$router.push({name: "edittopic", params: {id: this.topic.id}});
+            }
+        },
+        getTypeClass(top, good, tab) {
+            if (top) {
+                return "success";
+            } else if (good) {
+                return "danger";
+            } else if (tab == "ask") {
+                return "primary";
+            } else if (tab == "job") {
+                return "warning";
+            } else if (tab == "share") {
+                return "";
+            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+                return "hidden";
+            } else {
+                return "";
+            }
+        },
     },
-    alert: {
-      content: "loading...",
-      show: false,
-      timeShow (content, time, cb) {
-        var self = this;
-        self.content = content || "loading...";
-        self.show = true;
-        let timer = setTimeout(() => {
-          self.show = false;
-          cb && cb();
-        }, time || 2000)
-      },
-    },
-    authorTxt:'<br/><br/><a class="form" href="http://www.bubblypoker.com">from cnode-vue</a>',
+    components: {
+        cvHead,
+        cvAside,
+        cvComment,
+        cvReply,
+        cvLoading
     }
-  },
-  computed: {},
-  created (){
-    this.fetchData();
-  },
-  mounted () {},
-  methods: {
-    fetchData () {
-      this.loading.show();
-      $.ajax({
-        url: "https://cnodejs.org/api/v1/topic/" + this.topicId,
-        dataType: "json",
-      }).done((res) => {
-        this.loading.hide();
-        if(!res || !res.success){
-          return;
-        }
-        res.data.type = this.getTypeClass(res.data.top, res.data.good, res.data.tab);
-        this.topic = res.data;
-      })
-      .fail((error) => {
-
-      });
-    },
-    getTypeClass(top, good, tab) {
-        if (top || good) {
-            return "hasColor";
-        } else if (!top && !good) {
-            return "hidden";
-        }
-    },
-    reply (){
-        if(!this.reply_content){
-            this.alert.show("请填写回复！");
-            return;
-        }
-        let time = new Date(),
-            linkUsers = tool.linkUsers(this.reply_content),
-            html = markdown.toHTML(linkUsers) + this.authorTxt;
-            addHtml = $('<div class="markdown-text"></div>').append(html)[0].outerHTML;
-        $.ajax({
-            url: "" + this.topicId + "/replies",
-            accesstoken: sessionStorage.getItem("at"),
-            content: this.reply_content + this.authorTxt,
-        }).done((res) => {
-
-        }).fail(() => {
-
-        })
-    }
-  },
-  components: {
-    "cv-head": require("../components/header.vue"),
-    "cv-loading": require("../components/loading.vue"),
-    "cv-aside": require("../components/aside.vue")
-  }
 }
+
+
 </script>
 
 <style lang="sass">
-  #content{
-    margin-right: 300px;
-    padding: 0;
-    #topic-panel{
-      #topic-header{
-        background-color: #fff;
-        padding: 10px;
-        border-radius: 3px 3px 0 0;
-        border-bottom: 1px solid #f0f0f0;
-        #header-title{
-          font-size: 22px;
-          font-weight: 700;
-          margin: 8px 0;
-          display: inline-block;
-          vertical-align: bottom;
-          line-height: 130%;
-          .topic-header{
-            font-size: 22px;
-            font-weight: 700;
-            margin: 8px 0;
-            display: inline-block;
-            vertical-align: bottom;
-            width: 75%;
-            line-height: 130%;
-            .topic-title{
-              margin-left: 10px;
-            }
-          }
+#container {
+    #topic-detail {
+        .title {
+            font-size: 18px;
+            display: inline;
         }
-        .infos{
-          .info{
-            font-size: 12px;
-            color: #838383;
-            &:before{
-              content: "•";
-            }
-          }
-        }
-      }
-      #topic-container{
-        background-color: #fff;
-        min-height: 400px;
-        position: relative;
-        padding: 24px;
-        border-radius: 0 0 3px 3px;
-      }
-    }
-    .panel-header{
-        color: #51585c;
-        border-radius: 3px 3px 0 0;
-        background-color: #f6f6f6;
-        padding: 10px;
-    }
-    .panel{
-        margin-top: 20px;
-        #comment-content{
-            padding: 10px;
-            border-radius: 0 0 3px 3px;
-            background-color: #f3eee9;
+        .topic-info {
+            margin-top: 10px;
             position: relative;
-            .comment{
-                overflow: hidden;
-                padding: 0 0 1em;
-                border-bottom: 1px solid #ddd;
-                margin: 0 0 1em;
-                *zoom: 1;
-                position: relative;
-                .comment-img {
-                    float: left;
-                    margin-right: 24px;
-                    border-radius: 5px;
-                    overflow: hidden;
-                    text-decoration: none;
-                    color: #778087;
-                    img{
-                        display: block;
-                        width: 50px;
-                        height: 50px;
-                    }
-                    .comment-username{
-                        width: 60px;
-                        height: 20px;
-                        line-height: 20px;
-                        display: block;
-                        white-space: nowrap;
-                        text-overflow: ellipsis;
-                        overflow: hidden;
-                    }
+            span {
+                font-size: 12px;
+                margin-left: 10px;
+                display: inline-block;
+                color: #838383;
+                &:before {
+                    content: "•";
+                    margin-right: 5px;
                 }
-                .comment-body{
-                    overflow: hidden;
-                    .text{
-                        padding: 10px;
-                        border: 1px solid #e5e5e5;
-                        border-radius: 5px;
-                        background: #fff;
-                        p:last-child{
-                            margin: 0;
-                        }
-                        &:before{
-                        top: 18px;
-                        left: 78px;
-                        width: 9px;
-                        height: 9px;
-                        border-width: 0 0 1px 1px;
-                        border-style: solid;
-                        border-color: #e5e5e5;
-                        background: #fff;
-                        -webkit-transform: rotate(45deg);
-                        -moz-transform: rotate(45deg);
-                        -ms-transform: rotate(45deg);
-                        -o-transform: rotate(45deg);
-                        }
-                    }
-                    .attribution {
-                        margin: 0.5em 0 0;
-                        font-size: 14px;
-                        color: #666;
-                    }
+            }
+            .actionBtn {
+                color: #20a0ff;
+                position: absolute;
+                bottom: -12px;
+                right: 0;
+                &.editBtn{
+                    right: 60px;
                 }
             }
         }
     }
-  }
-  .comments:before,
-   .comment:before,
-   .comment .text:before {
-       content: "";
-       position: absolute;
-       top: 0;
-       left: 65px;
-   }
-
-   .comments:before {
-       width: 3px;
-       top: 30px;
-       bottom: 25px;
-       left: 75px;
-       background: rgba(0,0,0,0.1);
-   }
-
-   .comment:before {
-       width: 9px;
-       height: 9px;
-       border: 3px solid #fff;
-       border-radius: 100px;
-       margin: 16px 0 0 -6px;
-       box-shadow: 0 1px 1px rgba(0,0,0,0.2), inset 0 1px 1px rgba(0,0,0,0.1);
-       background: #ccc;
-   }
-
-   .comment:hover:before {
-       background: orange;
-   }
-
-   .comment .text:before {
-       top: 18px;
-       left: 78px;
-       width: 9px;
-       height: 9px;
-       border-width: 0 0 1px 1px;
-       border-style: solid;
-       border-color: #e5e5e5;
-       background: #fff;
-       -webkit-transform: rotate(45deg);
-       -moz-transform: rotate(45deg);
-       -ms-transform: rotate(45deg);
-       -o-transform: rotate(45deg);
-   }
-
-   .topic-reply{
-       #reply-container{
-           padding: 10px;
-           border-radius: 0 0 3px 3px;
-           background-color: #fff;
-           position: relative;
-           textarea{
-               display: block;
-                -webkit-box-flex: 1;
-                width: 100%;
-                border: 1px solid #d5dbdb;
-                background-color: #fff;
-                font-size: 14px;
-                color: #313131;
-                resize: none;
-           }
-           #reply{
-               display: block;
-               text-decoration: none;
-               color: #fff;
-               background-color: #08c;
-               padding: 10px 10px;
-               border-radius: 3px;
-               margin-top: 10px;
-               text-align: center;
-
-           }
-       }
-   }
+}
 </style>

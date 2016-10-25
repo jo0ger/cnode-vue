@@ -21,7 +21,7 @@ exports.getArticleType = (top, good, tab) => {
   }else if(tab === "job"){
     return "招聘";
   }else{
-    return "未知";
+    return "";
   }
 };
 

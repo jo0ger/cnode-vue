@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mocha Test Runner</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+  <style type="text/css">
+    .test_box {
+      border: 1px solid red;
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+
+<body>
+<div style="position: absolute;left: -9999px;top: -9999px;">
+  <div id="test_box" class="test_box"></div>
+</div>
+<div id="mocha"></div>
+
+<script src="../node_modules/mocha/mocha.js"></script>
+<script src="../node_modules/should/should.js"></script>
+<script src="../node_modules/sinon/pkg/sinon.js"></script>
+<script src="../dist/dom.js"></script>
+
+<script>mocha.setup('bdd')</script>
+
+<script src="../dist/dom_test.js"></script>
+
+<script>
+  if (window.mochaPhantomJS) {
+    mochaPhantomJS.run();
+  } else {
+    mocha.run();
+  }
+</script>
+</body>
+</html>

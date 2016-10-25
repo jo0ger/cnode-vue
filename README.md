@@ -1,18 +1,27 @@
 # cnode-vue
 
-> 基于vue和vue-router构建
+> 基于vue和vue-router构建的cnodejs web网站SPA
+
+#运用
+* [vue2.0](http://vuefe.cn/)
+* [vue-router2.0](http://vuefe.cn/vue-router/)
+* [element-ui](http://element.eleme.io/)
 
 ## Build Setup
 
 ``` bash
-# install dependencies
+# 安装依赖
 npm install
 
-# serve with hot reload at localhost:8080
+# 开发模式（localhost:8080，hot reload）
 npm run dev
 
-# build for production with minification
+# 生产模式（JS压缩，webpack）
 npm run build
+
+# 生产模式（JS，css压缩，webpack+gulp）
+npm run dist
+
 ```
 
 For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).

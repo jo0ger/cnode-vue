@@ -1,44 +1,44 @@
 <template lang="html">
-  <div>
-      <cv-head></cv-head>
-      <main id="main">
-        <cv-aside :username="user.loginname" :avatar="user.avatar" :userid="user.id" :isIndex="true"></cv-aside>
-        <div class="content" id="content">
-          <div class="panel" id="panel">
-            <nav id="index-nav">
-              <router-link :to="{name: 'index', query: {tab: 'all'}}" class="item" exact>全部</router-link>
-              <router-link :to="{name: 'index', query: {tab: 'good'}}" class="item" exact>精华</router-link>
-              <router-link :to="{name: 'index', query: {tab: 'share'}}" class="item" exact>分享</router-link>
-              <router-link :to="{name: 'index', query: {tab: 'ask'}}" class="item" exact>问答</router-link>
-              <router-link :to="{name: 'index', query: {tab: 'job'}}" class="item" exact>招聘</router-link>
-            </nav>
-            <section id="articles">
-              <article class="article" v-for="item in articles">
-                <router-link :to="{name: 'user', params: {loginname: item.author.loginname}}" class="creater-avatar avatar">
-                  <img :src="item.author.avatar_url" alt="" />
-                </router-link>
-                <span class="count">
-                  <span class="reply" v-text="item.reply_count"></span>
-                  <span class="seperator">/</span>
-                  <span class="visit" v-text="item.visit_count"></span>
-                </span>
-                <span :class="['type', item.typeClass]">{{ item.top | getArticleType(item.good, item.tab) }}</span>
-                <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
-                <span class="last-reply-time">{{ item.last_reply_at | getDateFromNow }}</span>
-              </article>
-            </section>
-          </div>
-        </div>
-      </main>
-    <cv-loading :showLoading="loading.showLoading" :content="loading.content"></cv-loading>
-  </div>
+<div id="container">
+<cvHead></cvHead>
+<main id="main">
+    <el-row :gutter="20" id="container">
+        <el-col :span="18" id="content" :offset="3">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card index">
+                    <div slot="header" class="clearfix index-nav">
+                        <el-menu id="navbar" theme="light" :default-active="curTab" class="el-menu-demo" mode="horizontal" router>
+                            <el-menu-item index="all" :route="{name: 'index', query: {tab: 'all'}}">全部</el-menu-item>
+                            <el-menu-item index="good" :route="{name: 'index', query: {tab: 'good'}}">精华</el-menu-item>
+                            <el-menu-item index="share" :route="{name: 'index', query: {tab: 'share'}}">分享</el-menu-item>
+                            <el-menu-item index="ask" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
+                            <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
+                        </el-menu>
+                        <cvLoading :showLoading="loading.showLoading"></cvLoading>
+                    </div>
+                    <cvList :topics="topics"></cvList>
+                    <section class="page">
+                        <!-- <cvPage></cvPage> -->
+                    </section>
+                </el-card>
+            </div>
+        </el-col>
+    </el-row>
+</main>
+</div>
+
 </template>
 
 <script>
+import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
+import cvList from  "../components/list.vue";
+
 export default {
     data() {
         return {
-            articles: [],
+            topics: [],
+            curTab: this.$route.query.tab || "all",
             queryData: {
                 page: 1,
                 tab: "all",
@@ -47,18 +47,12 @@ export default {
             },
             loading: {
                 showLoading: false,
-                content: "loading...",
                 show() {
                     this.showLoading = true;
                 },
                 hide() {
                     this.showLoading = false;
                 }
-            },
-            user:{
-                loginname: localStorage.getItem("loginname") || "",
-                avatar: localStorage.getItem("avatar") || "",
-                id: localStorage.getItem("id") || ""
             },
             scrollLock: false
         };
@@ -68,13 +62,17 @@ export default {
         sessionStorage.setItem("tab", this.queryData.tab);
     },
     watch: {
-        "$route": "fetchTopics"
+        "$route" () {
+            this.curTab = this.$route.query.tab || "all";
+            this.fetchTopics();
+        }
     },
     mounted() {
         this.fetchTopics();
-        window.addEventListener("scroll", () => {
-            this.scrollLoad();
-        });
+        //上拉加载
+        window.addEventListener("scroll", (e) => {
+          this.scrollLoad();
+      });
     },
     methods: {
         fetchTopics() {
@@ -88,8 +86,7 @@ export default {
                 data: this.queryData
             }).done((data) => {
                 this.loading.hide();
-                this.scrollLock = false;
-                console.log(data);
+                this.scrollLock = true;
                 if (!data || !data.success) {
                     //TODO 错误抛出
                     return;
@@ -97,130 +94,67 @@ export default {
                 data.data.forEach((v, i) => {
                     v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
                 });
-                if (!tabdiff)
-                    this.articles = [];
-                this.articles = this.articles.concat(data.data);
+                if(!tabdiff){
+                  this.topics = [];
+                }
+                this.topics = this.topics.concat(data.data);
+
             }).fail((error) => {
                 this.showLoading = false;
                 //TODO 错误抛出
             });
         },
         getTypeClass(top, good, tab) {
-            if (top || good) {
-                return "hasColor";
-            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+            if (top) {
+                return "success";
+            } else if ( good) {
+                return "danger";
+            } else if (tab == "ask") {
+                return "primary";
+            } else if (tab == "job") {
+                return "warning";
+            } else if (tab == "share") {
+                return "";
+            }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {
-                return "noColor";
+                return "";
             }
+
+
         },
-        scrollLoad() {
-            if (this.scrollLock)
-                return;
-            let body = document.body,
-                height = body.clientHeight + body.scrollTop,
-                scrollHeight = body.scrollHeight;
-            if (height > scrollHeight - 10) {
-                this.scrollLock = true;
-                this.queryData.page++;
-                this.fetchTopics();
-            }
+        scrollLoad: function(){
+          if(!this.scrollLock)
+            return;
+          let body = document.body,
+              height = body.clientHeight + body.scrollTop,
+              scrollHeight = body.scrollHeight;
+          if(height > scrollHeight - 10){
+            this.scrollLock = false;
+            this.queryData.page++;
+            this.fetchTopics();
+          }
         }
 
     },
     components: {
-        "cv-head": require("../components/header.vue"),
-        "cv-loading": require("../components/loading.vue"),
-        "cv-aside": require("../components/aside.vue")
+        cvHead,
+        cvLoading,
+        cvList
     }
 }
+
+
 </script>
 
 <style lang="sass">
 #content {
-    margin-right: 300px;
-    padding: 0;
-    #panel {
-        #index-nav {
-            padding: 10px;
-            background-color: #f6f6f6;
-            border-radius: 3px 3px 0 0;
-            .item {
-                text-decoration: none;
-                color: #80bd01;
-                margin: 0 10px;
-                &.router-link-active {
-                    background-color: #80bd01;
-                    color: #fff;
-                    padding: 3px 4px;
-                    border-radius: 3px;
-                }
+    .index{
+        .el-card__header {
+            padding: 0;
+            background-color: #eff2f7;
+            .index-nav {}
             }
-        }
-        #articles {
-            background-color: #fff;
-            .article {
-                padding: 10px;
-                height: 30px;
-                line-height: 30px;
-                border-bottom: 1px solid #f0f0f0;
-                position: relative;
-                display: block;
-                color: #333;
-                &:last-child {
-                    border: none;
-                }
-                .avatar {
-                    float: left;
-                    img {
-                        width: 30px;
-                        height: 30px;
-                        border-radius: 3px;
-                        max-width: 100%;
-                        vertical-align: middle;
-                    }
-                }
-                .count {
-                    width: 70px;
-                    text-align: center;
-                    display: inline-block;
-                    float: left;
-                    .seperator {
-                        color: #9e78c0;
-                        font-size: 10px;
-                        margin: 0 -3px;
-                    }
-                    .reply {
-                        color: #9e78c0;
-                    }
-                    .visit {
-                        font-size: 10px;
-                    }
-                }
-
-                .title {
-                    max-width: 65%;
-                    display: inline-block;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    float: left;
-                    margin-left: 10px;
-                    text-decoration: none;
-                    color: #333;
-                }
-                .last-reply-time {
-                    float: right;
-                    position: absolute;
-                    bottom: 0;
-                    right: 10px;
-                    font-size: 0.8em;
-                    display: inline-block;
-                    margin-left: 20px;
-                    color: #777;
-                }
-            }
-        }
     }
 }
 </style>

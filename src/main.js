@@ -3,7 +3,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import App from './App.vue';
-// import App from "./pages/index.vue";
 import element from "element-ui";
 import "element-ui/lib/theme-default/index.css";
 import routes from "./router.js";
@@ -22,6 +21,21 @@ const router = new VueRouter({
   base: __dirname,
   routes: routes()
 });
+
+// router.beforeEach((to, from, next) => {
+//     let filters = ["user", "topic"],
+//         match = filters.find((v) => {
+//             if(v === to.name){
+//                 return true;
+//             }
+//         });
+//     if(to.name === from.name && match){
+//         next();
+//         window.location.reload();
+//     }else {
+//         next();
+//     }
+// });
 
 new Vue({
   router: router,
