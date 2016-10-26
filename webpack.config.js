@@ -116,7 +116,7 @@ if (isProduction()) {
                 warnings: false
             }
         }),
-        //将上面生成的js和css的引用追加到index_dev.html中，并重新生成index.html
+        //将上面生成的js和css的引用追加到./src/html-tpl/tpl.html中，并重新生成index.html
         new HtmlWebpackPlugin({
             filename: "../index.html",
             template: "./src/html-tpl/tpl.html"
