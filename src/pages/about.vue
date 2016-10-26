@@ -19,11 +19,13 @@
                 </el-col>
               </el-row>
         </main>
+        <cvLoading :showLoading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
+import cvLoading from "../components/loading.vue";
 import Markdown from "markdown";
 import aboutmd from "../assets/about.md";
 
@@ -32,7 +34,16 @@ const markdown = Markdown.markdown;
 export default {
     data() {
         return {
-            aboutContent: ""
+            aboutContent: "",
+            loading: {
+                showLoading: false,
+                show() {
+                    this.showLoading = true;
+                },
+                hide() {
+                    this.showLoading = false;
+                }
+            },
         }
     },
     computed: {},
@@ -42,9 +53,11 @@ export default {
     mounted() {},
     methods: {
         fetchAboutPage (){
+            this.loading.show();
             let self = this;
             $.get(aboutmd)
                 .done(res => {
+                    self.loading.hide();
                     if(!res){
                         //TODO 错误抛出
                         return;
@@ -54,6 +67,7 @@ export default {
                 })
                 .fail(error => {
                     //TODO 错误抛出
+                    self.loading.hide();
                 })
         }
 

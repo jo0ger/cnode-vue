@@ -150,15 +150,11 @@ export default {
                   let self = this;
                   self.loading.show();
                   let content = simplemde.value() || "",
-                      linkUsers = tool.linkUsers(content),
-                      htmlText = markdown.toHTML(linkUsers) + self.tagText,
-                      rendered_content = $('<div class="markdown-text"></div>').append(htmlText)[0].outerHTML,
-                      post_date = new Date(),
                       post_data = {
                           accesstoken: self.user.accesstoken,
                           tab: self.topicForm.tab,
                           title: self.topicForm.title,
-                          content: content + self.tagText
+                          content: content + (content.indexOf(self.tagText) == -1 && self.tagText || "")
                       },
                       queryUrl = "https://cnodejs.org/api/v1/topics";
                   if(self.editTopic.id){

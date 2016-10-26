@@ -277,7 +277,7 @@ export default {
                 bottom: -12px;
                 right: 0;
                 &.editBtn{
-                    right: 60px;
+                    right: 70px;
                 }
             }
         }

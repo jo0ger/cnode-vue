@@ -14,7 +14,6 @@
                             <el-menu-item index="ask" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
                             <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
                         </el-menu>
-                        <cvLoading :showLoading="loading.showLoading"></cvLoading>
                     </div>
                     <cvList :topics="topics"></cvList>
                     <section class="page">
@@ -25,6 +24,7 @@
         </el-col>
     </el-row>
 </main>
+<cvLoading :showLoading="loading.showLoading"></cvLoading>
 </div>
 
 </template>
