@@ -10,25 +10,23 @@
                                 <span>Api</span>
                             </header>
                             <main>
-                                <section class="markdown-body" v-html="apiContent">
-
+                                <transition name="transition">
+                                <section class="markdown-body" v-html="apiContent"  v-if="apiContent">
                                 </section>
+                            </transition>
                             </main>
                         </el-card>
                     </div>
                 </el-col>
               </el-row>
         </main>
-        <cvLoading :showLoading="loading.showLoading"></cvLoading>
     </div>
 </template>
-
 <script>
 import cvHead from "../components/header.vue";
 import cvLoading from "../components/loading.vue";
 import Markdown from "markdown";
 import apimd from "../assets/api.md";
-
 const markdown = Markdown.markdown;
 
 export default {
@@ -47,18 +45,18 @@ export default {
         }
     },
     computed: {},
-    created (){
+    created() {
         this.fetchApiPage();
     },
     mounted() {},
     methods: {
-        fetchApiPage (){
+        fetchApiPage() {
             this.loading.show();
             let self = this;
             $.get(apimd)
                 .done(res => {
                     self.loading.hide();
-                    if(!res){
+                    if (!res) {
                         //TODO 错误抛出
                         return;
                     }
@@ -71,13 +69,10 @@ export default {
 
                 })
         }
-
     },
     components: {
-        cvHead
+        cvHead,
+        cvLoading
     }
 }
 </script>
-
-<style lang="sass">
-</style>

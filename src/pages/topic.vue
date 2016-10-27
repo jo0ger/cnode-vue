@@ -5,9 +5,9 @@
       <el-row :gutter="20">
         <el-col :span="18">
             <el-row>
-                <el-col :span="24" id="topic-detail">
+                <el-col :span="24" id="topic">
                     <div class="grid-content bg-purple">
-                        <el-card class="box-card">
+                        <el-card class="box-card" id="topic-detail">
                             <div slot="header" class="clearfix">
                                 <div class="topic-title">
                                     <el-tag v-if="topic.typeClass" :type="topic.typeClass" :hit="false" :class="topic.typeClass">{{ topic.top | getArticleType(topic.good, topic.tab) }}</el-tag>
@@ -29,15 +29,17 @@
                                     </el-button>
                                 </p>
                             </div>
-                            <main class="markdown-body topic-content" v-html="topic.content">
+                            <transition name="transition">
+                            <main v-if="topic.content" class="markdown-body topic-content" v-html="topic.content">
                             </main>
+                            </transition>
                         </el-card>
                     </div>
                 </el-col>
             </el-row>
             <cvComment :topic="topic" :comment-list="topic.replies" :comment-count="topic.reply_count"></cvComment>
             <el-row  id="reply-panel" class="cv-panel">
-                <el-col :span="24" id="topic-detail">
+                <el-col :span="24" id="reply-detail">
                     <div class="grid-content bg-purple">
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
@@ -71,6 +73,7 @@ import cvLoading from "../components/loading.vue";
 import cvAside from  "../components/aside.vue";
 import cvComment  from "../components/comment.vue";
 import cvReply  from "../components/reply.vue";
+import ZoomService from "../assets/plugins/zoom/zoom.js";
 
 export default {
     data() {
@@ -111,7 +114,14 @@ export default {
     created() {
         this.fetchTopicData();
     },
-    mounted() {},
+    mounted() {
+    },
+    beforeUpdate (){
+        $("#topic-detail").css({
+            overflow: "visible"
+        })
+         new ZoomService().listen();
+    },
     watch: {
         "$route" (to, from) {
             //如果路由从一个主题进入到另一个主题，此时只改变了hash，因此需要异步加载主题详情
@@ -253,7 +263,7 @@ export default {
 
 <style lang="sass">
 #container {
-    #topic-detail {
+    #topic {
         .title {
             font-size: 18px;
             display: inline;
@@ -279,6 +289,11 @@ export default {
                 &.editBtn{
                     right: 70px;
                 }
+            }
+        }
+        .topic-content{
+            img{
+                cursor: -webkit-zoom-in;
             }
         }
     }

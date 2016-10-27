@@ -15,7 +15,7 @@
                             <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
                         </el-menu>
                     </div>
-                    <cvList :topics="topics"></cvList>
+                    <cvList :topics="topics"  v-if="topics.length"></cvList>
                     <section class="page">
                         <!-- <cvPage></cvPage> -->
                     </section>

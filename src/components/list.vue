@@ -1,6 +1,7 @@
 <template lang="html">
-    <section class="article-list">
-        <article class="topic" v-for="item in topics" v-if="topics.length">
+    <transition-group name="transition" class="article-list" tag="section">
+    <!-- <section class="article-list"> -->
+        <article class="topic" v-for="(item, index) in topicstran" v-if="topics" :key="index">
             <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
                 <img :src="item.author.avatar_url" alt="" />
             </router-link>
@@ -16,18 +17,26 @@
             <router-link :to="{name: 'topic', params: {id: item.id}}" class="title" v-text="item.title"></router-link>
             <span class="last-reply-time" v-if="item.create_at">发布于 {{ item.create_at | getDateFromNow }}</span>
         </article>
-        <span v-else>暂无</span>
-    </section>
+    <!-- </section> -->
+</transition-group>
 </template>
 
 <script>
 export default {
   data () {
-    return {}
+    return {
+        topicstran: []
+    }
   },
   props: ["topics", "hideCount"], //hideCount是否隐藏浏览量及回复量，因为在用户主页上api没有返回这两项
   computed: {},
   mounted () {
+      this.topicstran = [].concat(this.topics);
+  },
+  watch: {
+      "topics" (){
+          this.topicstran = [].concat(this.topics);
+      }
   },
   methods: {},
   components: {}

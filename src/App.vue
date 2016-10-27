@@ -11,12 +11,11 @@ import "./assets/scss/normalize.scss";
 import "./assets/scss/common.scss";
 import "./assets/css/github-markdown.css";
 export default {
-  data () {
-    return {
+    data() {
+        return {}
+    },
+    components: {
+        cvBacktotop
     }
-  },
-  components: {
-      cvBacktotop
-  }
 }
 </script>

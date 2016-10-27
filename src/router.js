@@ -19,6 +19,7 @@ export default () => {
     }, {
         path: "/index",
         name: 'index',
+        //resolve加载组件方式为异步组件，组件需要渲染的时候触发工厂函数，并把结果缓存起来，用于再次渲染
         component: (resolve) => {
             require(["./pages/index.vue"], resolve);
         },

@@ -1,18 +1,19 @@
 <template lang="html">
     <el-row id="comment-panel" class="cv-panel">
-        <el-col :span="24" id="comment-panel">
+        <el-col :span="24">
             <div class="grid-content bg-purple">
-                <el-card class="box-card">
+                <el-card class="box-card" id="comment-detail">
                     <div slot="header" class="clearfix">
                         <span v-if="commentCount">{{commentCount}} 条评论</span>
                         <span v-else>暂无评论</span>
                     </div>
-                    <main class="markdown-body comment-area">
-                        <article class="comment" v-for="(item, index) in commentList">
+                    <transition-group tag="main" class="markdown-body commentarea" name="transition">
+                    <!-- <main class="markdown-body comment-area"> -->
+                        <article class="comment" v-for="(item, index) in commentList" :key="item">
                             <router-link :to="{name:'user', params: {name: item.author.loginname}}" class="comment-avatar">
                               <img :src="item.author.avatar_url" alt="" class="img"/>
                             </router-link>
-                            <section class="comment-detail">
+                            <section class="comment-list">
                                 <header class="comment-title">
                                     <span class="name" v-text="item.author.loginname"></span>
                                     <span class="floor">{{ index + 1 }}楼</span>
@@ -44,7 +45,8 @@
                                     v-if="currentReplyId === item.id"></cvReply>
                             </section>
                         </article>
-                    </main>
+                    <!-- </main> -->
+                </transition>
                 </el-card>
             </div>
         </el-col>
@@ -53,7 +55,6 @@
 
 <script>
 import cvReply from "./reply.vue";
-import Vue from "vue";
 
 export default {
   data () {
@@ -63,7 +64,7 @@ export default {
             accesstoken: localStorage.accesstoken || "",
             id: localStorage.id || ""
         },
-        currentReplyId: ""
+        currentReplyId: "",
     }
   },
   props: ["topic", "commentList", "commentCount"],
@@ -71,8 +72,8 @@ export default {
       "commentList" () {
           let self = this;
           this.commentList.forEach(function(v, i){
-              Vue.set(v, "isUp", self.checkIsUp(v.ups))
-              Vue.set(v, "upBtn", {
+              self.$set(v, "isUp", self.checkIsUp(v.ups))
+              self.$set(v, "upBtn", {
                   type: v.isUp && "on" || "off",
                   on: "star-on",
                   off: "star-off",
@@ -175,6 +176,7 @@ export default {
 
 <style lang="sass">
     .comment{
+        transition: all 1s;
         display: -webkit-flex;
         display: -ms-flex;
         display: flex;
@@ -191,7 +193,7 @@ export default {
                 border-radius: 3px;
             }
         }
-        .comment-detail{
+        .comment-list{
             margin-left: 20px;
             width: 100%;
             overflow: auto;

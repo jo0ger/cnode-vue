@@ -10,16 +10,17 @@
                                 <span>关于</span>
                             </header>
                             <main>
-                                <section class="markdown-body" v-html="aboutContent">
+                                <transition name="transition">
+                                <section class="markdown-body" v-if="aboutContent" v-html="aboutContent">
 
                                 </section>
+                            </transition>
                             </main>
                         </el-card>
                     </div>
                 </el-col>
               </el-row>
         </main>
-        <cvLoading :showLoading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
@@ -73,7 +74,8 @@ export default {
 
     },
     components: {
-        cvHead
+        cvHead,
+        cvLoading
     }
 }
 </script>

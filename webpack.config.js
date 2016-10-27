@@ -87,7 +87,8 @@ module.exports = {
         }),
         //设置全局变量$
         new webpack.ProvidePlugin({
-            $: "jquery"
+            $: "jquery",
+            jQuery: "jquery"
         })
 
     ],

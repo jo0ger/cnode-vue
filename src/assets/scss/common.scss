@@ -56,14 +56,35 @@ img {
     color: #fff;
     font-size: 12px;
     float: left;
+
     &.hasColor {
         background-color: #80bd01;
     }
+
     &.hidden {
         display: none;
     }
+
     &.noColor {
         background-color: #e5e5e5;
         color: #999;
     }
+}
+
+.transition-enter-active,
+.transition-leave-active {
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s;
+    -o-transition: all 1s;
+    transition: all 1s;
+}
+
+.transition-enter,
+.transition-leave {
+    opacity: 0;
+    filter: Alpha(opcity=0);
+    -webkit-transform: translateX(30px);
+    -moz-transform: translateX(30px);
+    -o-transform: translateX(30px);
+    transform: translateX(30px);
 }
