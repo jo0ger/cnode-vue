@@ -12,18 +12,18 @@ export default () => {
         path: "/",
         redirect: {
             name: "index",
-            query: {
+            params: {
                 tab: "all"
             }
         },
     }, {
-        path: "/index",
+        path: "/index/:tab",
         name: 'index',
         //resolve加载组件方式为异步组件，组件需要渲染的时候触发工厂函数，并把结果缓存起来，用于再次渲染
         component: (resolve) => {
             require(["./pages/index.vue"], resolve);
         },
-        alias: "/?tab=all",
+        // alias: "/?tab=all",
     }, {
         path: "/api",
         name: "api",

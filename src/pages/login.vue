@@ -1,6 +1,5 @@
 <template lang="html">
     <div id="container">
-    <cvHead></cvHead>
     <main id="main">
         <el-row :gutter="20">
             <el-col :span="18" id="content" :offset="3">
@@ -27,14 +26,12 @@
             </el-col>
           </el-row>
     </main>
-    <cvLoading :showLoading="loading.showLoading" :content="loading.content"></cvLoading>
+    <cvLoading :showLoading="loading"></cvLoading>
   </div>
 </template>
 
 <script>
-import cvHead from "../components/header.vue";
 import cvLoading from "../components/loading.vue";
-
 export default {
     data() {
         return {
@@ -44,20 +41,10 @@ export default {
                 type: "",
                 description: "",
             },
-            loading: {
-                showLoading: false,
-                content: "loading...",
-                show() {
-                    this.showLoading = true;
-                },
-                hide() {
-                    this.showLoading = false;
-                }
-            },
+            loading: false,
             redirect: this.$route.query.redirect || ""
         }
     },
-    computed: {},
     mounted() {},
     methods: {
         goBack() {
@@ -65,8 +52,9 @@ export default {
             this.$router.replace(redirect);
         },
         login() {
-            let self = this;
-            if (self.at === '') {
+            let self = this,
+                accesstoken = self.at;
+            if (!accesstoken) {
                 self.$message({
                     showClose: true,
                     message: "token格式错误，可从官网个人设置页面获取",
@@ -75,51 +63,59 @@ export default {
                 return;
             }
 
-            this.loading.show();
+            self.loading = true;
 
             $.ajax({
                 type: "POST",
                 url: 'https://cnodejs.org/api/v1/accesstoken',
                 dataType: 'json',
                 data: {
-                    accesstoken: self.at
+                    accesstoken: accesstoken
                 }
-            }).done((data) => {
-                this.loading.hide();
-                if (!data || !data.success) {
-                    self.$message({
-                        showClose: true,
-                        message: "登录出错，请稍候再试！",
-                        type: "warning"
-                    })
+            }).done((res) => {
+                self.loading = false;
+                if (!res || !res.success) {
+                    self.errorHandle();
                     return;
                 }
-                localStorage.loginname = data.loginname;
-                localStorage.avatar = data.avatar_url;
-                localStorage.id = data.id;
-                localStorage.accesstoken = self.at;
-                self.$message({
-                    showClose: true,
-                    message: "登录成功",
-                    type: "success",
-                    onClose() {
-                        let redirect = decodeURIComponent(self.$route.query.redirect || "/");
-                        self.$router.replace(redirect);
-                    }
+                let user = {
+                    id: res.id,
+                    loginname: res.loginname,
+                    avatar: res.avatar_url,
+                    accesstoken: accesstoken,
+                    score: null,
+                    message: null
+                };
+                //由于vuex在页面刷新时会把state清空（什么鬼呀）
+                //所以此处得把user信息存入localStorage
+                Object.keys(user).forEach(v => {
+                    localStorage[v] = user[v];
+                });
+                this.$store.dispatch("setUserInfo", user).then(() => {
+                    self.$message({
+                        showClose: true,
+                        message: "登录成功",
+                        type: "success",
+                        onClose() {
+                            let redirect = decodeURIComponent(self.$route.query.redirect || "/");
+                            self.$router.replace(redirect);
+                        }
+                    });
                 });
             }).fail((error) => {
-                //TODO 错误抛出
-                this.loading.hide();
-                self.$message({
-                    showClose: true,
-                    message: "登录出错，请稍候再试！",
-                    type: "warning"
-                })
+                self.loading = false;
+                self.errorHandle();
+            });
+        },
+        errorHandle (){
+            self.$message({
+                showClose: true,
+                message: "登录出错，请稍候再试！",
+                type: "warning"
             });
         }
     },
     components: {
-        cvHead,
         cvLoading
     }
 }

@@ -7,6 +7,7 @@ import element from "element-ui";
 import "element-ui/lib/theme-default/index.css";
 import routes from "./router.js";
 import filters from "./filters.js";
+import store from "./store";
 
 Vue.config.devtools = true;
 Object.keys(filters).forEach((v, i) => {
@@ -17,7 +18,7 @@ Vue.use(element);
 
 
 const router = new VueRouter({
-  mode: "hash",
+  mode: "history",
   base: __dirname,
   routes: routes()
 });
@@ -38,6 +39,7 @@ const router = new VueRouter({
 // });
 
 new Vue({
-  router: router,
+  router,
+  store,
   render: h => h(App)
 }).$mount("#app");

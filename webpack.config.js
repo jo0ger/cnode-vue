@@ -24,7 +24,7 @@ module.exports = {
     debug: true,
     entry: {
         main: "./src/main.js",
-        common: ["jquery", "vue", "vue-router", "./src/assets/plugins/simplemde/simplemde.min.js"]
+        common: ["jquery", "vue", "vue-router", "vuex", "./src/assets/plugins/simplemde/simplemde.min.js"]
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -71,6 +71,9 @@ module.exports = {
                 name: "[name].[ext]?[hash]"
             }
         }]
+    },
+    resolve: {
+        extension: ["", ".js"]
     },
     plugins: [
         //提取公共代码，在有多个entry时，这些入口文件可能会有一些公共代码

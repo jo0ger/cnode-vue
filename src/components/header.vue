@@ -4,7 +4,7 @@
       <img src="https://o4j806krb.qnssl.com/public/images/cnodejs_light.svg" alt="" />
     </a>
     <el-menu id="navbar" theme="dark" :default-active="curTab" class="el-menu-demo" mode="horizontal" router>
-      <el-menu-item index="index" :route="{name: 'index', query: {tab: 'all'}}">首页</el-menu-item>
+      <el-menu-item index="index" :route="{name: 'index', params: {tab: 'all'}}">首页</el-menu-item>
       <el-menu-item index="api" :route="{name: 'api'}">API</el-menu-item>
       <el-menu-item index="about" :route="{name: 'about'}">关于</el-menu-item>
       <el-menu-item index="login" :route="{name: 'login'}" v-if="!user.loginname">登录</el-menu-item>
@@ -20,28 +20,35 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
     data() {
         return {
-            user: {
-                loginname: localStorage.loginname || "",
-                avatar: localStorage.avatar || "",
-                id: localStorage.id || "",
-                accesstoken: localStorage.accesstoken || "",
-                score: localStorage.score || "",
-                message: 0,
-            },
-            curTab: this.$route.name || "index"
+            curTab: ""   //当前header所在栏目
         }
     },
-    computed: {},
-    created() {
-        if (this.user.loginname)
-            this.fetchUserInfo();
-        if (this.user.loginname)
-            this.fetchMessage();
+    computed: mapGetters({
+        user: 'getUserInfo'
+    }),
+    watch: {
+        "$route" (){
+            let map = ["index", "api", "about", "newtopic"];
+            this.curTab = map.indexOf(this.$route.name) > 0 ? this.$route.name : ""; //如果route变化，将curTab转到该route
+        },
+        "user" (){
+            if(this.user.loginname){
+                this.fetchMessage();
+                this.fetchUserInfo();
+            }
+        }
     },
-    mounted() {},
+    created (){
+        if(this.user.loginname){
+            this.fetchMessage();
+            this.fetchUserInfo();
+        }
+    },
     methods: {
         //获取用户信息 just for 获取用户积分
         fetchUserInfo() {
@@ -81,35 +88,28 @@ export default {
         //退出
         logout() {
             let self = this;
-            // localStorage.loginname = "";
-            // localStorage.avatar = "";
-            // localStorage.id = "";
-            // localStorage.accesstoken = "";
-            // localStorage.message = "";
-            // localStorage.score = "";
-
-            // Object.keys(self.user).forEach(function(v) {
-            //     self.user[v] = "";
-            // });
-
-            localStorage.clear();
-            this.$message({
-                showClose: true,
-                message: "退出成功",
-                type: "success",
-                onClose (){
-                    if(self.$route.matched.some(record => record.meta.requiresAuth)){
-                        //如果此时路由有登录权限控制，则退出后返回到首页
-                        self.$router.push({name: "index", query: {tab: "all"}});
-                    }else{
-                        //否则刷新当前页面
-                        window.location.reload();
+            Object.keys(self.user).forEach(v => {
+                localStorage.removeItem(v);
+            });
+            self.$store.dispatch("clearUserInfo").then(() => {
+                this.$message({
+                    showClose: true,
+                    message: "退出成功",
+                    type: "success",
+                    onClose (){
+                        if(self.$route.matched.some(record => record.meta.requiresAuth)){
+                            //如果此时路由有登录权限控制，则退出后返回到首页
+                            self.$router.push({name: "index", query: {tab: "all"}});
+                        }
+                        // else{
+                        //     //否则刷新当前页面
+                        //     window.location.reload();
+                        // }
                     }
-                }
-            })
+                });
+            });
         }
     },
-    components: {}
 }
 </script>
 

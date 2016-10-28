@@ -1,6 +1,5 @@
 <template lang="html">
   <div id="container">
-  <cvHead></cvHead>
   <main id="main" v-if="!topicerror">
       <el-row :gutter="20">
         <el-col :span="18">

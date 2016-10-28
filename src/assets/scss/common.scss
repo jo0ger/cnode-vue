@@ -88,3 +88,21 @@ img {
     -o-transform: translateX(30px);
     transform: translateX(30px);
 }
+
+
+
+
+.item-move, .item-enter-active, .item-leave-active{
+    transition: all .5s cubic-bezier(.55,0,.1,1);
+}
+
+.item-enter{
+    opacity: 0;
+    transform: translate(30px, 0);
+}
+
+.item-leave-active{
+    position: absolute;
+    opacity: 0;
+    transform: translate(30px, 0);
+}

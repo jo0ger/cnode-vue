@@ -1,6 +1,5 @@
 <template lang="html">
 <div id="container">
-<cvHead></cvHead>
 <main id="main">
     <el-row :gutter="20" id="container">
         <el-col :span="18" id="content" :offset="3">
@@ -8,23 +7,27 @@
                 <el-card class="box-card index">
                     <div slot="header" class="clearfix index-nav">
                         <el-menu id="navbar" theme="light" :default-active="curTab" class="el-menu-demo" mode="horizontal" router>
-                            <el-menu-item index="all" :route="{name: 'index', query: {tab: 'all'}}">全部</el-menu-item>
-                            <el-menu-item index="good" :route="{name: 'index', query: {tab: 'good'}}">精华</el-menu-item>
-                            <el-menu-item index="share" :route="{name: 'index', query: {tab: 'share'}}">分享</el-menu-item>
-                            <el-menu-item index="ask" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
-                            <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
+                            <el-menu-item index="all" :route="{name: 'index', params: {tab: 'all'}}">全部</el-menu-item>
+                            <el-menu-item index="good" :route="{name: 'index', params: {tab: 'good'}}">精华</el-menu-item>
+                            <el-menu-item index="share" :route="{name: 'index', params: {tab: 'share'}}">分享</el-menu-item>
+                            <el-menu-item index="ask" :route="{name: 'index', params: {tab: 'ask'}}">问答</el-menu-item>
+                            <el-menu-item index="job" :route="{name: 'index', params: {tab: 'job'}}">招聘</el-menu-item>
                         </el-menu>
                     </div>
-                    <cvList :topics="topics"  v-if="topics.length"></cvList>
-                    <section class="page">
-                        <!-- <cvPage></cvPage> -->
-                    </section>
+                    <transition :name="transition">
+                        <div class="articles-lists" :key="curTab">
+                            <transition-group name="transition" class="article-list" tag="section">
+                                <cvListItem :item="item" :key="item.id" v-for="item in topics"></cvListItem>
+                            </transition-group>
+                        </div>
+                    </transition>
                 </el-card>
             </div>
         </el-col>
     </el-row>
 </main>
-<cvLoading :showLoading="loading.showLoading"></cvLoading>
+
+<cvLoading :showLoading="loading"></cvLoading>
 </div>
 
 </template>
@@ -33,49 +36,47 @@
 import cvHead from "../components/header.vue";
 import cvLoading from "../components/loading.vue";
 import cvList from  "../components/list.vue";
+import cvListItem from "../components/listItem.vue";
 
 export default {
     data() {
         return {
             topics: [],
-            curTab: this.$route.query.tab || "all",
+            activeTopics: [],
+            curTab: this.$route.params.tab || "all",
             queryData: {
                 page: 1,
                 tab: "all",
                 limit: 20,
                 mdrender: true
             },
-            loading: {
-                showLoading: false,
-                show() {
-                    this.showLoading = true;
-                },
-                hide() {
-                    this.showLoading = false;
-                }
-            },
-            scrollLock: false
+            loading: false,
+            scrollLock: false,
+            transition: "slide-left"
         };
     },
-    computed: {},
+    computed: {
+        tab() {
+            return this.$route.params.tab || "all";
+        }
+    },
     watch: {
-        "$route" () {
-            this.curTab = this.$route.query.tab || "all";
-            this.fetchTopics();
+        tab(to, from) {
+            this.fetchTopics(to, from);
         }
     },
     mounted() {
         //从别的页进入主页，且tab相同，则加载缓存数据
         //这里我在想如果sessionStorage里有curTab，要不要点击首页时重定向到curTab？
         //待定待定
-        if(sessionStorage.queryData && sessionStorage.curTab === this.curTab){
+        if (sessionStorage.queryData && sessionStorage.curTab === this.curTab) {
             this.topics = JSON.parse(sessionStorage.topics || "[]");
             this.queryData = JSON.parse(sessionStorage.queryData || this.queryData);
             let scrollTop = sessionStorage.scrollTop || 0;
             this.$nextTick(() => {
                 $(window).scrollTop(scrollTop)
             });
-        }else{
+        } else {
             this.fetchTopics();
         }
         //上拉加载
@@ -88,15 +89,15 @@ export default {
         sessionStorage.removeItem("scrollTop");
 
     },
-    beforeRouteLeave (to, from, next) {
+    beforeRouteLeave(to, from, next) {
         //如果从首页进入用户详情和话题详情页面的话，将当前话题，滚动条高度，当前queryData缓存进sessionStorage
         //因为其他例如api,about,newtopic页面都是在顶部才能进去
         //后续如果header fixed的话，可以把限制条件去掉
         //
         //Bug: 点击去往详情页后，返回，此时不要滚动页面和点击链接，然后前进，此时scrollTop为0
         //待解决
-        if(to.name === "user" || to.name === "topic"){
-            sessionStorage.curTab = from.query.tab || "all";
+        if (to.name === "user" || to.name === "topic") {
+            sessionStorage.curTab = from.params.tab || "all";
             sessionStorage.topics = JSON.stringify(this.topics);
             sessionStorage.queryData = JSON.stringify(this.queryData);
             sessionStorage.scrollTop = $(window).scrollTop();
@@ -105,10 +106,10 @@ export default {
         next();
     },
     methods: {
-        fetchTopics() {
-            this.loading.show();
+        fetchTopics(to, from) {
+            this.loading = true;
             this.scrollLock = true;
-            let tab = this.$route.query.tab || "all",
+            let tab = this.$route.params.tab || "all",
                 tabdiff = tab === this.queryData.tab;
             this.queryData.tab = tab;
             $.ajax({
@@ -116,7 +117,7 @@ export default {
                 type: "GET",
                 data: this.queryData
             }).done((data) => {
-                this.loading.hide();
+                this.loading = false;
                 this.scrollLock = false;
                 if (!data || !data.success) {
                     //TODO 错误抛出
@@ -125,20 +126,24 @@ export default {
                 data.data.forEach((v, i) => {
                     v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
                 });
-                if(!tabdiff){
-                  this.topics = [];
+                if (!tabdiff) {
+                    this.activeTopics = [];
                 }
-                this.topics = this.topics.concat(data.data);
-
+                this.curTab = this.$route.params.tab;
+                this.activeTopics = this.activeTopics.concat(data.data);
+                this.topics = this.activeTopics;
+                if (to && from) {
+                    this.transition = this.checkDirecition(to, from) > 0 ? "slide-left" : "slide-right";
+                }
             }).fail((error) => {
-                this.showLoading = false;
+                this.loading = false;
                 //TODO 错误抛出
             });
         },
         getTypeClass(top, good, tab) {
             if (top) {
                 return "success";
-            } else if ( good) {
+            } else if (good) {
                 return "danger";
             } else if (tab == "ask") {
                 return "primary";
@@ -146,44 +151,79 @@ export default {
                 return "warning";
             } else if (tab == "share") {
                 return "gray";
-            }else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
+            } else if (!top && !good && !tab || (this.$route.query.tab === tab)) {
                 return "hidden";
             } else {
                 return "";
             }
         },
-        scrollLoad: function(){
-          if(this.scrollLock)
-            return;
-          let body = document.body,
-              height = body.clientHeight + body.scrollTop,
-              scrollHeight = body.scrollHeight;
-          if(height > scrollHeight - 10){
-            this.scrollLock = false;
-            this.queryData.page++;
-            this.fetchTopics();
-          }
+        scrollLoad: function() {
+            if (this.scrollLock)
+                return;
+            let body = document.body,
+                height = body.clientHeight + body.scrollTop,
+                scrollHeight = body.scrollHeight;
+            if (height > scrollHeight - 10) {
+                this.scrollLock = false;
+                this.queryData.page++;
+                this.fetchTopics();
+            }
+        },
+        checkDirecition(to, from) {
+            let map = ["all", "good", "share", "ask", "job"];
+            return (map.indexOf(to) - map.indexOf(from)) > 0 ? 1 : -1;
         }
-
     },
     components: {
         cvHead,
         cvLoading,
-        cvList
+        cvList,
+        cvListItem
     }
 }
-
-
 </script>
 
 <style lang="sass">
 #content {
-    .index{
+    .index {
         .el-card__header {
             padding: 0;
             background-color: #eff2f7;
-            .index-nav {}
-            }
+        }
     }
+}
+@media only screen and (max-width: 1024px) {
+    #content {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+.slide-left-enter,
+.slide-right-leave-active {
+    opacity: 0;
+    transform: translate(30px, 0);
+}
+.slide-left-leave-active,
+.slide-right-enter {
+    opacity: 0;
+    transform: translate(-30px, 0);
+}
+.grid-content {
+    position: relative;
+}
+.el-card {
+    border: none;
+    border-radius: 0;
+}
+.index .el-card__body{
+    padding: 0;
+}
+.articles-lists {
+    position: absolute;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }
 </style>
