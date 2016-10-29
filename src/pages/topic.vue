@@ -101,8 +101,6 @@ export default {
     created() {
         this.fetchTopicData();
     },
-    mounted() {
-    },
     beforeUpdate (){
         $("#topic-detail").css({
             overflow: "visible"

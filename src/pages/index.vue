@@ -44,7 +44,6 @@ export default {
                 limit: 20,
                 mdrender: true
             },
-            loading: false,
             scrollLock: false,
             transition: "slide-left"
         };
@@ -97,6 +96,8 @@ export default {
             sessionStorage.queryData = JSON.stringify(this.queryData);
             sessionStorage.scrollTop = $(window).scrollTop();
         }
+        //这里得滚动条先滚到最上面
+        $(window).scrollTop(0);
         $(window).off("scroll");
         next();
     },

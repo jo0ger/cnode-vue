@@ -71,6 +71,10 @@ img {
     }
 }
 
+.markdown-body ul li {
+    list-style-type: initial;
+}
+
 @media only screen and (max-width: 1024px) {
     .cv.cv-100 {
         width: 100%;
