@@ -168,7 +168,6 @@ export default {
               }
           }).done((res) => {
               this.setLoading(false);
-              console.log(res);
               if(!res || !res.success){
                   self.$message({
                       showClose: true,
@@ -184,6 +183,11 @@ export default {
                   message: "消息全部设置已读！",
                   type: "success"
               });
+              self.$store.commit("setValue", {
+                  key: "message",
+                  value: 0
+              });
+              localStorage.message = 0;
           }).fail((error) => {
               this.setLoading(false);
               self.$message({

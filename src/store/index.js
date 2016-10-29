@@ -39,10 +39,11 @@ const store = new Vuex.Store({
         },
         setValue: (state, obj) => {
             console.log(obj.key + "---" + obj.value);
-            if (obj && obj.key && obj.value) {
+            if (obj && obj.key) {
                 state.user[obj.key] = obj.value;
             }
             console.log(obj.value);
+            console.log(state.user[obj.key]);
         },
         setLoading: (state, loading) => {
             state.loading = loading;

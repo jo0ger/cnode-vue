@@ -209,6 +209,7 @@ export default {
         flex-flow: row nowrap;
         .user-avatar{
             max-width: 100px;
+            max-height: 100px;
         }
         .info{
             flex-grow: 1;

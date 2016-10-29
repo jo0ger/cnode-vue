@@ -12,7 +12,7 @@
         <template slot="title"><img :src="user.avatar" alt="" class="avatar"/>{{user.loginname}}<el-badge :value="user.message" :max="99" class="mark" v-if="user.message > 0"></el-badge></template>
         <el-menu-item index="personal" :route="{name: 'user', params: {name: user.loginname}}">个人主页</el-menu-item>
         <el-menu-item index=""><span>积分：</span>{{user.score}}</el-menu-item>
-        <el-menu-item index="message" :route="{name: 'message'}"><i class='el-icon-message'></i>消息<el-badge :value="user.message || 0" :max="99" class="mark"></el-badge></el-menu-item>
+        <el-menu-item index="message" :route="{name: 'message'}"><i class='el-icon-message'></i>消息<el-badge :value="user.message" :max="99" class="mark"></el-badge></el-menu-item>
         <el-menu-item index="" @click.native="logout"><i class="el-icon-upload2"></i>退出</el-menu-item>
       </el-submenu>
       <el-menu-item index="newtopic" :route="{name: 'newtopic'}" v-if="user.loginname">发布话题</el-menu-item>
@@ -48,6 +48,12 @@ export default {
                 this.fetchMessage();
                 this.fetchUserInfo();
             }
+        }
+    },
+    created (){
+        if (this.user.loginname) {
+            this.fetchMessage();
+            this.fetchUserInfo();
         }
     },
     methods: {
@@ -86,7 +92,6 @@ export default {
                     return;
                 }
                 localStorage.message = res.data;
-                //这里message没有被set进store里面，不知道为什么，score都set进去了
                 this.$store.commit("setValue", {
                     key: "message",
                     value: res.data
