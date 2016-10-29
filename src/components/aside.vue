@@ -96,8 +96,7 @@ export default {
                 }
             });
         }
-    },
-    components: {}
+    }
 }
 </script>
 

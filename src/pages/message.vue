@@ -85,39 +85,26 @@
               </el-col>
           </el-row>
         </main>
-        <cvLoading :show-loading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 import cvAside from  "../components/aside.vue";
+import {mapGetters} from "vuex";
 
 export default {
   data () {
     return {
-        user: {
-            loginname: localStorage.loginname || "",
-            accesstoken: localStorage.accesstoken || ""
-        },
         messages: {
             has_read_messages: [],
             hasnot_read_messages: []
-        },
-        loading: {
-            showLoading: false,
-            show() {
-                this.showLoading = true;
-            },
-            hide() {
-                this.showLoading = false;
-            }
-        },
-        switchs: ""
+        }
     }
   },
-  computed: {},
+  computed: mapGetters({
+      user: "getUserInfo"
+  }),
   created (){
       if(this.user.accesstoken){
           this.fetchMessages();
@@ -127,7 +114,7 @@ export default {
   methods: {
       //获取已读和未读消息
       fetchMessages () {
-          this.loading.show();
+          this.setLoading(true);
           let self = this;
           $.ajax({
               url: "https://cnodejs.org/api/v1/messages",
@@ -136,8 +123,7 @@ export default {
                   accesstoken: self.user.accesstoken
               }
           }).done((res) => {
-              console.log(res);
-              this.loading.hide();
+              self.setLoading(false);
               if (!res || !res.success) {
                   //TODO 是否错误抛出  有待商榷
                   self.$message({
@@ -149,6 +135,7 @@ export default {
               }
               self.messages = res.data || self.messages;
           }).fail((error) => {
+              this.setLoading(false);
               //TODO 是否错误抛出  有待商榷
               self.$message({
                   showClose: true,
@@ -170,7 +157,7 @@ export default {
               });
               return;
           }
-          this.loading.show();
+          this.setLoading(true);
           let self = this;
           $.ajax({
               url: "https://cnodejs.org/api/v1/message/mark_all",
@@ -180,7 +167,7 @@ export default {
                   accesstoken: self.user.accesstoken
               }
           }).done((res) => {
-              self.loading.hide();
+              this.setLoading(false);
               console.log(res);
               if(!res || !res.success){
                   self.$message({
@@ -198,19 +185,21 @@ export default {
                   type: "success"
               });
           }).fail((error) => {
-              self.loading.hide();
+              this.setLoading(false);
               self.$message({
                   showClose: true,
                   message: "操作失败",
                   type: "warning"
               });
           });
+      },
+      setLoading (state) {
+          this.$store.commit("setLoading", state);
       }
   },
   components: {
       cvHead,
-      cvAside,
-      cvLoading
+      cvAside
   }
 }
 </script>

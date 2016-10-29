@@ -2,23 +2,21 @@
 <div id="container">
 <main id="main">
     <el-row :gutter="20" id="container">
-        <el-col :span="18" id="content" :offset="3">
+        <el-col :span="18" id="content" :offset="3" class="cv cv-100">
             <div class="grid-content bg-purple">
                 <el-card class="box-card index">
                     <div slot="header" class="clearfix index-nav">
                         <el-menu id="navbar" theme="light" :default-active="curTab" class="el-menu-demo" mode="horizontal" router>
-                            <el-menu-item index="all" :route="{name: 'index', params: {tab: 'all'}}">全部</el-menu-item>
-                            <el-menu-item index="good" :route="{name: 'index', params: {tab: 'good'}}">精华</el-menu-item>
-                            <el-menu-item index="share" :route="{name: 'index', params: {tab: 'share'}}">分享</el-menu-item>
-                            <el-menu-item index="ask" :route="{name: 'index', params: {tab: 'ask'}}">问答</el-menu-item>
-                            <el-menu-item index="job" :route="{name: 'index', params: {tab: 'job'}}">招聘</el-menu-item>
+                            <el-menu-item index="all" :route="{name: 'index', query: {tab: 'all'}}">全部</el-menu-item>
+                            <el-menu-item index="good" :route="{name: 'index', query: {tab: 'good'}}">精华</el-menu-item>
+                            <el-menu-item index="share" :route="{name: 'index', query: {tab: 'share'}}">分享</el-menu-item>
+                            <el-menu-item index="ask" :route="{name: 'index', query: {tab: 'ask'}}">问答</el-menu-item>
+                            <el-menu-item index="job" :route="{name: 'index', query: {tab: 'job'}}">招聘</el-menu-item>
                         </el-menu>
                     </div>
                     <transition :name="transition">
                         <div class="articles-lists" :key="curTab">
-                            <transition-group name="transition" class="article-list" tag="section">
-                                <cvListItem :item="item" :key="item.id" v-for="item in topics"></cvListItem>
-                            </transition-group>
+                            <cvList :topics="topics"></cvList>
                         </div>
                     </transition>
                 </el-card>
@@ -26,24 +24,20 @@
         </el-col>
     </el-row>
 </main>
-
-<cvLoading :showLoading="loading"></cvLoading>
 </div>
 
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 import cvList from  "../components/list.vue";
-import cvListItem from "../components/listItem.vue";
 
 export default {
     data() {
         return {
             topics: [],
             activeTopics: [],
-            curTab: this.$route.params.tab || "all",
+            curTab: this.$route.query.tab || "all",
             queryData: {
                 page: 1,
                 tab: "all",
@@ -57,12 +51,13 @@ export default {
     },
     computed: {
         tab() {
-            return this.$route.params.tab || "all";
+            return this.$route.query.tab || "all";
         }
     },
     watch: {
         tab(to, from) {
-            this.fetchTopics(to, from);
+            this.fetchTopics();
+            this.transition = this.checkDirecition(to, from) > 0 ? "slide-left" : "slide-right";
         }
     },
     mounted() {
@@ -97,7 +92,7 @@ export default {
         //Bug: 点击去往详情页后，返回，此时不要滚动页面和点击链接，然后前进，此时scrollTop为0
         //待解决
         if (to.name === "user" || to.name === "topic") {
-            sessionStorage.curTab = from.params.tab || "all";
+            sessionStorage.curTab = from.query.tab || "all";
             sessionStorage.topics = JSON.stringify(this.topics);
             sessionStorage.queryData = JSON.stringify(this.queryData);
             sessionStorage.scrollTop = $(window).scrollTop();
@@ -106,10 +101,10 @@ export default {
         next();
     },
     methods: {
-        fetchTopics(to, from) {
-            this.loading = true;
+        fetchTopics() {
+            this.setLoading(true);
             this.scrollLock = true;
-            let tab = this.$route.params.tab || "all",
+            let tab = this.$route.query.tab || "all",
                 tabdiff = tab === this.queryData.tab;
             this.queryData.tab = tab;
             $.ajax({
@@ -117,7 +112,7 @@ export default {
                 type: "GET",
                 data: this.queryData
             }).done((data) => {
-                this.loading = false;
+                this.setLoading(false);
                 this.scrollLock = false;
                 if (!data || !data.success) {
                     //TODO 错误抛出
@@ -129,14 +124,11 @@ export default {
                 if (!tabdiff) {
                     this.activeTopics = [];
                 }
-                this.curTab = this.$route.params.tab;
+                this.curTab = this.$route.query.tab;
                 this.activeTopics = this.activeTopics.concat(data.data);
                 this.topics = this.activeTopics;
-                if (to && from) {
-                    this.transition = this.checkDirecition(to, from) > 0 ? "slide-left" : "slide-right";
-                }
             }).fail((error) => {
-                this.loading = false;
+                this.setLoading(false);
                 //TODO 错误抛出
             });
         },
@@ -172,13 +164,14 @@ export default {
         checkDirecition(to, from) {
             let map = ["all", "good", "share", "ask", "job"];
             return (map.indexOf(to) - map.indexOf(from)) > 0 ? 1 : -1;
+        },
+        setLoading (state) {
+            this.$store.commit("setLoading", state);
         }
     },
     components: {
         cvHead,
-        cvLoading,
-        cvList,
-        cvListItem
+        cvList
     }
 }
 </script>
@@ -191,22 +184,6 @@ export default {
             background-color: #eff2f7;
         }
     }
-}
-@media only screen and (max-width: 1024px) {
-    #content {
-        width: 100%;
-        margin-left: 0;
-    }
-}
-.slide-left-enter,
-.slide-right-leave-active {
-    opacity: 0;
-    transform: translate(30px, 0);
-}
-.slide-left-leave-active,
-.slide-right-enter {
-    opacity: 0;
-    transform: translate(-30px, 0);
 }
 .grid-content {
     position: relative;

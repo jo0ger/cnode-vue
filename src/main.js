@@ -11,16 +11,16 @@ import store from "./store";
 
 Vue.config.devtools = true;
 Object.keys(filters).forEach((v, i) => {
-  Vue.filter(v, filters[v]);
+    Vue.filter(v, filters[v]);
 });
 Vue.use(VueRouter);
 Vue.use(element);
 
 
 const router = new VueRouter({
-  mode: "history",
-  base: __dirname,
-  routes: routes()
+    mode: "hash",
+    base: __dirname,
+    routes: routes()
 });
 
 // router.beforeEach((to, from, next) => {
@@ -39,7 +39,7 @@ const router = new VueRouter({
 // });
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");

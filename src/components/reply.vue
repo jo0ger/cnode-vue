@@ -10,6 +10,7 @@ import "../assets/plugins/simplemde/simplemde.min.css";
 import Simplemde from "../assets/plugins/simplemde/simplemde.min.js";
 import tool from "../libs/tool";
 import Markdown from "markdown";
+import {mapGetters} from "vuex";
 
 let markdown = Markdown.markdown,
     simplemde = null;
@@ -17,29 +18,33 @@ let markdown = Markdown.markdown,
 export default {
     data() {
         return {
-            user: {
-                loginname: localStorage.loginname || "",
-                accesstoken: localStorage.accesstoken || "",
-                id: localStorage.id || "",
-                avatar: localStorage.avatar || ""
-            },
             flag: new Date().getTime(), //这里是为了将多个评论框区分开
             tagText: '<br/><br/><a class="tag" target="new" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
             placeholder: "请输入评论...",
             btnText: "评论",
-            replyCache: localStorage.replyCache || "" //如果用户未登录，暂存已编写好的评论
+            replyCache: sessionStorage.replyCache || "" //如果用户未登录，暂存已编写好的评论
         }
     },
     props: ["topic", "replyId", "replyTo"],
-    computed: {},
+    computed: mapGetters({
+        user: "getUserInfo"
+    }),
     created (){
         if(!this.user.loginname){
             this.placeholder = "您未登录，评论将暂存...";
             this.btnText = "登录后评论";
         }
-        // $("body").animate({
-		// 	scrollTop : $("body").offset().top
-		// }, 500)
+    },
+    watch: {
+        "user.loginname" (){
+            console.log(this.user.loginname);
+            if(!this.user.loginname){
+                this.placeholder = "您未登录，评论将暂存...";
+                this.btnText = "登录后评论";
+            }
+            //找不到好的办法将评论框placeholder转换
+            $(".CodeMirror-placeholder").text(this.placeholder);
+        }
     },
     mounted() {
         if(this.replyId){
@@ -59,26 +64,27 @@ export default {
             showIcons: ["bold", "italic", "strikethrough", "heading", "heading-smaller", "heading-bigger", "heading-1", "heading-2", "heading-3", "code", "quote", "unordered-list", "ordered-list", "clean-block", "link", "image", "table", "horizontal-rule", "preview", "side-by-side", "fullscreen", "guide"]
         })
         this.replyTo && simplemde.value("@" + this.replyTo);
-        if(this.topic.id === localStorage.topicId){
+        if(this.topic.id === sessionStorage.topicId){
             this.replyCache && simplemde.value(this.replyCache);
         }
-
-
-
     },
     methods: {
         unLoginHandle (){
             let replyTmp = document.getElementById("answereditor" + this.flag).value;
             if(replyTmp){
-                localStorage.topicId = this.topic.id;
-                localStorage.replyCache = replyTmp;
+                sessionStorage.topicId = this.topic.id;
+                sessionStorage.replyCache = replyTmp;
             }
+            this.$notify.info({
+              title: '消息',
+              message: '评论将暂存...'
+            });
             this.$router.replace({name: "login", query: {redirect: encodeURIComponent(this.$route.path)}});
         },
         clearReplyCache () {
             this.replyCache = "";
-            localStorage.removeItem("topicId");
-            localStorage.removeItem("replyCache");
+            sessionStorage.removeItem("topicId");
+            sessionStorage.removeItem("replyCache");
         },
         reply() {
             if(!this.user.loginname){

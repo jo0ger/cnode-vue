@@ -26,12 +26,10 @@
             </el-col>
           </el-row>
     </main>
-    <cvLoading :showLoading="loading"></cvLoading>
   </div>
 </template>
 
 <script>
-import cvLoading from "../components/loading.vue";
 export default {
     data() {
         return {
@@ -41,7 +39,6 @@ export default {
                 type: "",
                 description: "",
             },
-            loading: false,
             redirect: this.$route.query.redirect || ""
         }
     },
@@ -62,9 +59,7 @@ export default {
                 })
                 return;
             }
-
-            self.loading = true;
-
+            this.setLoading(true);
             $.ajax({
                 type: "POST",
                 url: 'https://cnodejs.org/api/v1/accesstoken',
@@ -73,7 +68,7 @@ export default {
                     accesstoken: accesstoken
                 }
             }).done((res) => {
-                self.loading = false;
+                this.setLoading(false);
                 if (!res || !res.success) {
                     self.errorHandle();
                     return;
@@ -103,7 +98,7 @@ export default {
                     });
                 });
             }).fail((error) => {
-                self.loading = false;
+                this.setLoading(false);
                 self.errorHandle();
             });
         },
@@ -113,10 +108,10 @@ export default {
                 message: "登录出错，请稍候再试！",
                 type: "warning"
             });
+        },
+        setLoading (state) {
+            this.$store.commit("setLoading", state);
         }
-    },
-    components: {
-        cvLoading
     }
 }
 </script>

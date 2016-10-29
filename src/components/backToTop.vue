@@ -14,7 +14,6 @@ export default {
             show: false
         }
     },
-    computed: {},
     created() {
         var self = this;
         if (window.addEventListener) {
@@ -35,7 +34,6 @@ export default {
             window["onscroll"] = null;
         }
     },
-    mounted() {},
     methods: {
         backToTop() {
             window.scrollTo(0, 0);
@@ -43,8 +41,7 @@ export default {
         handleScroll (){
             this.show = (window.scrollY > 200) && true || false;
         }
-    },
-    components: {}
+    }
 }
 </script>
 

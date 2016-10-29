@@ -9,7 +9,7 @@
                     </div>
                     <transition-group tag="main" class="markdown-body commentarea" name="transition">
                     <!-- <main class="markdown-body comment-area"> -->
-                        <article class="comment" v-for="(item, index) in commentList" :key="item">
+                        <article class="comment" v-for="(item, index) in commentList" :key="item.id">
                             <router-link :to="{name:'user', params: {name: item.author.loginname}}" class="comment-avatar">
                               <img :src="item.author.avatar_url" alt="" class="img"/>
                             </router-link>
@@ -55,19 +55,18 @@
 
 <script>
 import cvReply from "./reply.vue";
+import {mapGetters} from "vuex";
 
 export default {
   data () {
     return {
-        user: {
-            loginname: localStorage.loginname || "",
-            accesstoken: localStorage.accesstoken || "",
-            id: localStorage.id || ""
-        },
         currentReplyId: "",
     }
   },
   props: ["topic", "commentList", "commentCount"],
+  computed: mapGetters({
+      user: "getUserInfo"
+  }),
   watch: {
       "commentList" () {
           let self = this;
@@ -86,8 +85,6 @@ export default {
           });
       }
   },
-  computed: {},
-  mounted () {},
   methods: {
       //跳转到登陆界面
       goLogin (){

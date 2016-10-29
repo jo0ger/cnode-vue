@@ -2,18 +2,15 @@
     <div id="container">
         <main id="main">
             <el-row :gutter="20">
-                <el-col :span="18" id="content" :offset="3">
+                <el-col :span="18" id="content" :offset="3" class="cv cv-100">
                     <div class="grid-content bg-purple">
                         <el-card class="box-card">
                             <header slot="header" class="clearfix" id="panel-header">
                                 <span>关于</span>
                             </header>
                             <main>
-                                <transition name="transition">
                                 <section class="markdown-body" v-if="aboutContent" v-html="aboutContent">
-
                                 </section>
-                            </transition>
                             </main>
                         </el-card>
                     </div>
@@ -25,7 +22,6 @@
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 import Markdown from "markdown";
 import aboutmd from "../assets/about.md";
 
@@ -34,16 +30,7 @@ const markdown = Markdown.markdown;
 export default {
     data() {
         return {
-            aboutContent: "",
-            loading: {
-                showLoading: false,
-                show() {
-                    this.showLoading = true;
-                },
-                hide() {
-                    this.showLoading = false;
-                }
-            },
+            aboutContent: ""
         }
     },
     computed: {},
@@ -53,11 +40,11 @@ export default {
     mounted() {},
     methods: {
         fetchAboutPage (){
-            this.loading.show();
+            this.setLoading(true);
             let self = this;
             $.get(aboutmd)
                 .done(res => {
-                    self.loading.hide();
+                    this.setLoading(false);
                     if(!res){
                         //TODO 错误抛出
                         return;
@@ -67,14 +54,15 @@ export default {
                 })
                 .fail(error => {
                     //TODO 错误抛出
-                    self.loading.hide();
+                    this.setLoading(false);
                 })
+        },
+        setLoading (state) {
+            this.$store.commit("setLoading", state);
         }
-
     },
     components: {
-        cvHead,
-        cvLoading
+        cvHead
     }
 }
 </script>

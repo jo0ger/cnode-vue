@@ -18,7 +18,7 @@
                                     <span v-if="topic.author">作者 {{topic.author.loginname}}</span>
                                     <span>{{topic.visit_count}} 次浏览</span>
                                     <span v-if="topic.replies">{{topic.replies.length}} 评论</span>
-                                    <span>来自 {{ topic.top | getArticleType(topic.good, topic.tab) }}</span>
+                                    <span>来自 {{ "" | getArticleType(topic.good, topic.tab) }}</span>
                                     <el-button class="editBtn actionBtn" type="text" @click.native="topicEdit" v-if="user.loginname && user.loginname == topic.author.loginname">
                                         <i class="el-icon-edit"></i>编辑
                                     </el-button>
@@ -62,17 +62,16 @@
         </el-col>
     </el-row>
   </main>
-  <cvLoading :show-loading="loading.showLoading"></cvLoading>
   </div>
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 import cvAside from  "../components/aside.vue";
 import cvComment  from "../components/comment.vue";
 import cvReply  from "../components/reply.vue";
 import ZoomService from "../assets/plugins/zoom/zoom.js";
+import {mapGetters} from "vuex";
 
 export default {
     data() {
@@ -93,23 +92,12 @@ export default {
                     this.type = load || "on";
                 }
             },
-            user: {
-                accesstoken: localStorage.accesstoken || "",
-                loginname: localStorage.loginname || ""
-            },
-            loading: {
-                showLoading: false,
-                show() {
-                    this.showLoading = true;
-                },
-                hide() {
-                    this.showLoading = false;
-                }
-            },
             topicerror: false
         }
     },
-    computed: {},
+    computed: mapGetters({
+        user: "getUserInfo"
+    }),
     created() {
         this.fetchTopicData();
     },
@@ -135,7 +123,7 @@ export default {
         //获取主题详情
         fetchTopicData() {
             let self = this;
-            self.loading.show();
+            self.setLoading(true);
             $.ajax({
                 url: "https://cnodejs.org/api/v1/topic/" + self.topic.id,
                 type: "GET",
@@ -145,7 +133,7 @@ export default {
                     accesstoken: self.user.accesstoken
                 }
             }).done((res) => {
-                self.loading.hide();
+                self.setLoading(false);
                 if (!res || !res.success) {
                     //TODO 是否错误抛出  有待商榷
                     return;
@@ -157,7 +145,7 @@ export default {
                 }
             }).fail((error) => {
                 //TODO 是否错误抛出  有待商榷
-                self.loading.hide();
+                self.setLoading(false);
                 self.topicerror = true;
                 self.$message({
                   showClose: true,
@@ -226,7 +214,7 @@ export default {
                     title: this.topic.title,
                     content: ""
                 };
-                localStorage.editTopic = JSON.stringify(editTopic);
+                sessionStorage.editTopic = JSON.stringify(editTopic);
                 this.$router.push({name: "edittopic", params: {id: this.topic.id}});
             }
         },
@@ -247,13 +235,14 @@ export default {
                 return "";
             }
         },
+        setLoading (state) {
+            this.$store.commit("setLoading", state);
+        }
     },
     components: {
-        cvHead,
         cvAside,
         cvComment,
-        cvReply,
-        cvLoading
+        cvReply
     }
 }
 

@@ -89,13 +89,11 @@
               </el-col>
           </el-row>
         </main>
-        <cvLoading :show-loading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 import cvList from  "../components/list.vue";
 import cvAside from  "../components/aside.vue";
 
@@ -138,19 +136,20 @@ export default {
     methods: {
         //获取用户信息
         fetchUserInfo() {
-            this.loading.show();
+            this.setLoading(true);
             let self = this;
             $.ajax({
                 url: "https://cnodejs.org/api/v1/user/" + self.loginname,
                 type: "GET",
             }).done((res) => {
-                this.loading.hide();
+                self.setLoading(false);
                 if (!res || !res.success) {
                     //TODO 是否错误抛出  有待商榷
                     return;
                 }
                 this.user = res.data;
             }).fail((error) => {
+                self.setLoading(false);
                 //TODO 是否错误抛出  有待商榷
             });
         },
@@ -189,13 +188,15 @@ export default {
             } else {
                 return "";
             }
+        },
+        setLoading (state) {
+            this.$store.commit("setLoading", state);
         }
     },
     components: {
         cvHead,
         cvAside,
-        cvList,
-        cvLoading
+        cvList
     }
 }
 </script>

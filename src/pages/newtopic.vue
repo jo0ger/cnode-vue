@@ -2,7 +2,7 @@
     <div id="container">
     <main id="main">
         <el-row :gutter="20">
-            <el-col :span="18" id="content" :offset="3">
+            <el-col :span="18" id="content" :offset="3" class="cv cv-100">
                 <div class="grid-content bg-purple">
                     <el-card class="box-card">
                         <header slot="header" class="clearfix">
@@ -25,8 +25,8 @@
                                   <el-input type="textarea" v-model="topicForm.content" id="topiContent" placeholder="请输入内容"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                  <el-button type="primary" @click.native.prevent="submit" v-if="editTopic.id">编辑</el-button>
-                                  <el-button type="primary" @click.native.prevent="submit" v-else>发布</el-button>
+                                  <el-button type="primary" @click.native.prevent="submit" v-if="editTopic.id" :disabled="!user.loginname">编辑</el-button>
+                                  <el-button type="primary" @click.native.prevent="submit" v-else :disabled="!user.loginname">发布</el-button>
                                   <el-button @click.native.prevent="reset">重置</el-button>
                                 </el-form-item>
                             </el-form>
@@ -36,18 +36,17 @@
             </el-col>
         </el-row>
     </main>
-    <cvLoading :showLoading="loading.showLoading"></cvLoading>
     </div>
 </template>
 
 <script>
 import cvHead from "../components/header.vue";
-import cvLoading from "../components/loading.vue";
 
 import "../assets/plugins/simplemde/simplemde.min.css";
 import Simplemde from "../assets/plugins/simplemde/simplemde.min.js";
 import tool from "../libs/tool";
 import Markdown from "markdown";
+import {mapGetters} from "vuex";
 
 let markdown = Markdown.markdown,
     simplemde = null;
@@ -73,11 +72,8 @@ export default {
       };
 
       //编辑话题
-      let editTopic = JSON.parse(localStorage.editTopic || "{}");
+      let editTopic = JSON.parse(sessionStorage.editTopic || "{}");
     return {
-        user: {
-            accesstoken: localStorage.accesstoken || ""
-        },
         tagText: '<br/><br/><a class="tag" target="new" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
         loading: {
             showLoading: false,
@@ -115,7 +111,9 @@ export default {
         }
     }
   },
-  computed: {},
+  computed: mapGetters({
+      user: "getUserInfo"
+  }),
   created (){
       //有id，说明是编辑话题
       if(this.editTopic.id){
@@ -147,7 +145,7 @@ export default {
                       return false;
                   }
                   let self = this;
-                  self.loading.show();
+                  self.setLoading(true);
                   let content = simplemde.value() || "",
                       post_data = {
                           accesstoken: self.user.accesstoken,
@@ -167,8 +165,7 @@ export default {
                       dataType: "json",
                       data: post_data
                   }).done(res => {
-                      self.loading.hide();
-                      console.log(res);
+                      self.setLoading(false);
                       if(!res || !res.success){
                           //TODO 错误抛出
                           self.$message({
@@ -206,7 +203,7 @@ export default {
                           });
                       }
                   }).fail(error => {
-                      self.loading.hide();
+                      self.setLoading(false);
                       self.$message({
                           showClose: true,
                           message: "操作失败，" + (JSON.parse(error.responseText).error_msg) + ", 请稍后再试",
@@ -219,7 +216,7 @@ export default {
       //获取没有被渲染过的topic
       fetchUnmdTopic (){
           let self = this;
-          self.loading.show();
+          self.setLoading(true);
           $.ajax({
               url: "https://cnodejs.org/api/v1/topic/" + self.editTopic.id,
               type: "GET",
@@ -229,7 +226,7 @@ export default {
                   accesstoken: self.user.accesstoken
               }
           }).done((res) => {
-              self.loading.hide();
+              self.setLoading(false);
               if (!res || !res.success) {
                   //TODO 是否错误抛出  有待商榷
                   return;
@@ -238,18 +235,20 @@ export default {
               simplemde.value(res.data.content);
           }).fail((error) => {
               //TODO 是否错误抛出  有待商榷
-              self.loading.hide();
+              self.setLoading(false);
               self.$message({
                 showClose: true,
                 message: JSON.parse(error.responseText).error_msg || "获取数据失败",
                 type: "warning"
               });
           });
+      },
+      setLoading (state) {
+          this.$store.commit("setLoading", state);
       }
   },
   components: {
-      cvHead,
-      cvLoading,
+      cvHead
   }
 }
 </script>

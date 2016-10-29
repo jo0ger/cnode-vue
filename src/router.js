@@ -12,18 +12,18 @@ export default () => {
         path: "/",
         redirect: {
             name: "index",
-            params: {
+            query: {
                 tab: "all"
             }
         },
     }, {
-        path: "/index/:tab",
+        path: "/index",
         name: 'index',
         //resolve加载组件方式为异步组件，组件需要渲染的时候触发工厂函数，并把结果缓存起来，用于再次渲染
         component: (resolve) => {
             require(["./pages/index.vue"], resolve);
         },
-        // alias: "/?tab=all",
+        alias: "/?tab=all",
     }, {
         path: "/api",
         name: "api",
@@ -60,16 +60,22 @@ export default () => {
         component: (resolve) => {
             require(["./pages/message.vue"], resolve);
         },
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true
+        }
     }, {
         path: "/newtopic",
         name: "newtopic",
         component: newtopic,
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true
+        }
     }, {
         path: "/edittopic/:id",
         name: "edittopic",
         component: newtopic,
-        meta: { requiresAuth: true }
+        meta: {
+            requiresAuth: true
+        }
     }];
 };
