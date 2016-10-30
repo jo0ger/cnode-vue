@@ -210,6 +210,7 @@ export default {
         .user-avatar{
             max-width: 100px;
             max-height: 100px;
+            
         }
         .info{
             flex-grow: 1;
