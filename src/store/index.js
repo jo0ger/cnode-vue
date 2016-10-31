@@ -2,8 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 Vue.use(Vuex);
-
-const store = new Vuex.Store({
+export default new Vuex.Store({
     state: {
         user: {
             id: localStorage.id || "",
@@ -38,12 +37,9 @@ const store = new Vuex.Store({
             }
         },
         setValue: (state, obj) => {
-            console.log(obj.key + "---" + obj.value);
             if (obj && obj.key) {
                 state.user[obj.key] = obj.value;
             }
-            console.log(obj.value);
-            console.log(state.user[obj.key]);
         },
         setLoading: (state, loading) => {
             state.loading = loading;
@@ -68,5 +64,3 @@ const store = new Vuex.Store({
         },
     }
 });
-
-export default store;

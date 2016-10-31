@@ -81,7 +81,6 @@ export default {
         sessionStorage.removeItem("topics");
         sessionStorage.removeItem("queryData");
         sessionStorage.removeItem("scrollTop");
-
     },
     beforeRouteLeave(to, from, next) {
         //如果从首页进入用户详情和话题详情页面的话，将当前话题，滚动条高度，当前queryData缓存进sessionStorage
@@ -97,7 +96,7 @@ export default {
             sessionStorage.scrollTop = $(window).scrollTop();
         }
         //这里得滚动条先滚到最上面
-        $(window).scrollTop(0);
+        // $(window).scrollTop(0);
         $(window).off("scroll");
         next();
     },
@@ -108,6 +107,7 @@ export default {
             let tab = this.$route.query.tab || "all",
                 tabdiff = tab === this.queryData.tab;
             this.queryData.tab = tab;
+            console.log(this.queryData.page);
             $.ajax({
                 url: "https://cnodejs.org/api/v1/topics",
                 type: "GET",
@@ -123,11 +123,12 @@ export default {
                     v.typeClass = this.getTypeClass(v.top, v.good, v.tab);
                 });
                 if (!tabdiff) {
-                    this.activeTopics = [];
+                    this.topics = [];
                 }
                 this.curTab = this.$route.query.tab;
-                this.activeTopics = this.activeTopics.concat(data.data);
-                this.topics = this.activeTopics;
+                this.topics = this.topics.concat(data.data);
+                console.log(this.topics.length);
+                // console.log(this.topics.length);
             }).fail((error) => {
                 this.setLoading(false);
                 //TODO 错误抛出

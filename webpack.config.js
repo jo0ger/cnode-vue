@@ -4,9 +4,7 @@ var path = require('path'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     CleanWebpackPlugin = require('clean-webpack-plugin')
 
-var isProduction = function() {
-    return process.env.NODE_ENV === "production";
-};
+var isProduction = process.env.NODE_ENV === "production";
 
 var isDev = function(){
     return process.env.NODE_ENV === "development";
@@ -14,7 +12,7 @@ var isDev = function(){
 
 var publicPath = "/dist/",
     filename = "build.js";
-if (isProduction()) {
+if (isProduction) {
     //这里得加上项目名称
     publicPath = "/cnode-vue/dist/";
     filename = "build-[hash:8].js";
@@ -80,15 +78,15 @@ module.exports = {
         //将entry中common包含的文件提取到公共js中
         new webpack.optimize.CommonsChunkPlugin({
             name: ["common"],
-            filename: isProduction() && "common-[hash:8].js" || "common.js",
+            filename: isProduction && "common-[hash:8].js" || "common.js",
             minChunks: Infinity
         }),
         new ExtracTextPlugin({
-            filename: isProduction() && "style-[hash:8].css" || "style.css",
+            filename: isProduction && "style-[hash:8].css" || "style.css",
             allChunks: true,
             disable: false
         }),
-        //设置全局变量$
+        //设置全局变量$和jQuery
         new webpack.ProvidePlugin({
             $: "jquery",
             jQuery: "jquery"
@@ -102,7 +100,7 @@ module.exports = {
     devtool: '#eval-source-map'
 }
 
-if (isProduction()) {
+if (isProduction) {
     module.exports.devtool = '#source-map'
         // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
