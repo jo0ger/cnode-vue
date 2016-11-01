@@ -23,21 +23,6 @@ const router = new VueRouter({
     routes: routes()
 });
 
-// router.beforeEach((to, from, next) => {
-//     let filters = ["user", "topic"],
-//         match = filters.find((v) => {
-//             if(v === to.name){
-//                 return true;
-//             }
-//         });
-//     if(to.name === from.name && match){
-//         next();
-//         window.location.reload();
-//     }else {
-//         next();
-//     }
-// });
-
 new Vue({
     router,
     store,
