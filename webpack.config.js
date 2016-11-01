@@ -5,10 +5,7 @@ var path = require('path'),
     CleanWebpackPlugin = require('clean-webpack-plugin')
 
 var isProduction = process.env.NODE_ENV === "production";
-
-var isDev = function(){
-    return process.env.NODE_ENV === "development";
-};
+var isDev = process.env.NODE_ENV === "development";
 
 var publicPath = "/dist/",
     filename = "build.js";
@@ -36,7 +33,14 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.vue$/,
-            loader: 'vue-loader'
+            loader: 'vue-loader',
+            options: {
+                postcss: [
+                  require('autoprefixer')({
+                    browsers: ['last 3 versions']
+                  })
+                ]
+            }
         }, {
             test: /\.js$/,
             loader: 'babel',
@@ -94,8 +98,15 @@ module.exports = {
 
     ],
     devServer: {
+        publicPath: "/dist/",
         historyApiFallback: true,
-        noInfo: true
+        noInfo: true,
+        proxy: {
+            "/api/*": {
+                target: 'https://cnodejs.org',
+                host: "cnodejs.org"
+            }
+        }
     },
     devtool: '#eval-source-map'
 }

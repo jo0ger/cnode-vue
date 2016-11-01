@@ -107,7 +107,6 @@ export default {
             let tab = this.$route.query.tab || "all",
                 tabdiff = tab === this.queryData.tab;
             this.queryData.tab = tab;
-            console.log(this.queryData.page);
             $.ajax({
                 url: "https://cnodejs.org/api/v1/topics",
                 type: "GET",
@@ -127,8 +126,6 @@ export default {
                 }
                 this.curTab = this.$route.query.tab;
                 this.topics = this.topics.concat(data.data);
-                console.log(this.topics.length);
-                // console.log(this.topics.length);
             }).fail((error) => {
                 this.setLoading(false);
                 //TODO 错误抛出
