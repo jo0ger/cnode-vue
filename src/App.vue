@@ -1,17 +1,17 @@
 <template lang="html">
-    <div>
+    <div id="app">
         <cvHeader></cvHeader>
         <transition :name="transition">
             <router-view class="router-view"></router-view>
         </transition>
         <cvLoading :show="loading"></cvLoading>
-        <cvBacktotop></cvBacktotop>
+        <!-- <cvBacktotop></cvBacktotop> -->
     </div>
 </template>
 
 <script>
 import cvHeader from "./components/header.vue";
-import cvBacktotop from "./components/backToTop.vue";
+// import cvBacktotop from "./components/backToTop.vue";
 import cvLoading from "./components/loading.vue";
 import "./assets/scss/normalize.scss";
 import "./assets/scss/common.scss";
@@ -41,7 +41,7 @@ export default {
     components: {
         cvHeader,
         cvLoading,
-        cvBacktotop
+        // cvBacktotop
     }
 }
 </script>

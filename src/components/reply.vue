@@ -48,14 +48,14 @@ export default {
     },
     mounted() {
         if(this.replyId){
-            let editor_top = $("#answereditor" + this.flag).offset().top,
-                window_top = $(window).scrollTop(),
-                window_height = $(window).height();
-            if(editor_top > window_top + window_height){
-                $("body").animate({
-                    scrollTop: $("#answereditor" + this.flag).offset().top - window_height / 3
-                }, 500);
-            }
+            // let editor_top = $("#answereditor" + this.flag).offset().top,
+            //     window_top = $(window).scrollTop(),
+            //     window_height = $(window).height();
+            // if(editor_top > window_top + window_height){
+            //     $("body").animate({
+            //         scrollTop: $("#answereditor" + this.flag).offset().top - window_height / 3
+            //     }, 500);
+            // }
         }
         simplemde = new Simplemde({
             element: document.getElementById('answereditor' + this.flag),

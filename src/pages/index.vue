@@ -68,13 +68,13 @@ export default {
             this.queryData = JSON.parse(sessionStorage.queryData || this.queryData);
             let scrollTop = sessionStorage.scrollTop || 0;
             this.$nextTick(() => {
-                $(window).scrollTop(scrollTop)
+                $(document).scrollTop(scrollTop)
             });
         } else {
             this.fetchTopics();
         }
         //上拉加载
-        $(window).on("scroll", (e) => {
+        $(document).on("scroll", (e) => {
             this.scrollLoad();
         });
         sessionStorage.removeItem("curTab");
@@ -93,11 +93,11 @@ export default {
             sessionStorage.curTab = from.query.tab || "all";
             sessionStorage.topics = JSON.stringify(this.topics);
             sessionStorage.queryData = JSON.stringify(this.queryData);
-            sessionStorage.scrollTop = $(window).scrollTop();
+            sessionStorage.scrollTop = $(document).scrollTop();
         }
         //这里得滚动条先滚到最上面
-        // $(window).scrollTop(0);
-        $(window).off("scroll");
+        // $(document).scrollTop(0);
+        $(document).off("scroll");
         next();
     },
     methods: {

@@ -70,7 +70,7 @@ import cvHead from "../components/header.vue";
 import cvAside from  "../components/aside.vue";
 import cvComment  from "../components/comment.vue";
 import cvReply  from "../components/reply.vue";
-import ZoomService from "../assets/plugins/zoom/zoom.js";
+// import ZoomService from "../assets/plugins/zoom/zoom.js";
 import {mapGetters} from "vuex";
 
 export default {
