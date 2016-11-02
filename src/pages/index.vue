@@ -116,6 +116,11 @@ export default {
                 this.scrollLock = false;
                 if (!data || !data.success) {
                     //TODO 错误抛出
+                    this.$message({
+                        showClose: true,
+                        message: "数据加载错误！",
+                        type: "warning"
+                    });
                     return;
                 }
                 data.data.forEach((v, i) => {
@@ -129,6 +134,11 @@ export default {
             }).fail((error) => {
                 this.setLoading(false);
                 //TODO 错误抛出
+                this.$message({
+                    showClose: true,
+                    message: "数据加载错误！",
+                    type: "warning"
+                });
             });
         },
         getTypeClass(top, good, tab) {
@@ -160,6 +170,7 @@ export default {
                 this.fetchTopics();
             }
         },
+        //判定页面动画转动方向
         checkDirecition(to, from) {
             let map = ["all", "good", "share", "ask", "job"];
             return (map.indexOf(to) - map.indexOf(from)) > 0 ? 1 : -1;

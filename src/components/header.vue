@@ -38,7 +38,7 @@ export default {
     watch: {
         "$route" () {
             let map = ["index", "api", "about", "login", "personal", "message", "newtopic"];
-            this.curPage = map.indexOf(this.$route.name) < 0 ? "other" : this.$route.name; //如果route变化，将curPage转到该route
+            this.curPage = map.indexOf(this.$route.name) < 0 ? "other" : this.$route.name; //如果router变化，将curPage转到该router
             if (this.$route.params.name === this.user.loginname) {
                 this.curPage = "personal";
             }
@@ -103,6 +103,7 @@ export default {
         //退出
         logout() {
             let self = this;
+            //先移除locastorage里的用户信息
             Object.keys(self.user).forEach(v => {
                 localStorage.removeItem(v);
             });
@@ -135,20 +136,27 @@ export default {
 
 <style lang="sass">
 #header {
-    background-color: #324057;
     #logo {
         width: 120px;
-        padding: 10px 55px;
-        height: 28px;
+        padding: 0 55px;
+        height: 60px;
         display: block;
         float: left;
+        position: relative;
+        z-index: 666;
         img {
             max-width: 100%;
             max-height: 100%;
+            display: block;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
     }
     #navbar {
-        background-color: transparent;
         .avatar {
             width: 30px;
             height: 30px;

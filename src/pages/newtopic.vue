@@ -65,8 +65,10 @@ export default {
       };
       let checkContent = (rule, value, callback) => {
           if(!simplemde.value()){
+              $("#topiContent").css("border", "1px solid #ff4949");
               callback(new Error("内容不能为空"));
           }else {
+              $("#topiContent").css("border", "none");
               callback();
           }
       };
@@ -75,15 +77,6 @@ export default {
       let editTopic = JSON.parse(sessionStorage.editTopic || "{}");
     return {
         tagText: '<br/><br/><a class="tag" target="new" href="https://github.com/BubblyPoker/cnode-vue">来自 cnode-vue</a>',
-        loading: {
-            showLoading: false,
-            show() {
-                this.showLoading = true;
-            },
-            hide() {
-                this.showLoading = false;
-            }
-        },
         topicForm: {
             tab: "",
             title: "",
@@ -114,6 +107,36 @@ export default {
   computed: mapGetters({
       user: "getUserInfo"
   }),
+  watch: {
+    "$route" (){
+        //主要是为了编辑话题和新建话题切换
+        if(this.$route.params.id){
+            this.editTopic = {
+                id: this.$route.params.id,
+                tab: editTopic.tab,
+                title: editTopic.title,
+                content: editTopic.content
+            };
+            this.topicForm.id = this.editTopic.id;
+            this.topicForm.tab = this.editTopic.tab;
+            this.topicForm.title = this.editTopic.title;
+            this.fetchUnmdTopic();
+        }else{
+            this.editTopic = {
+                id: "",
+                tab: "",
+                title: "",
+                content: ""
+            };
+            this.topicForm = {
+                tab: "",
+                title: "",
+                content: ""
+            };
+            simplemde.value("");
+        }
+    }
+  },
   created (){
       //有id，说明是编辑话题
       if(this.editTopic.id){

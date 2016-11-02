@@ -12,8 +12,8 @@
 
 <style lang="sass">
     $offset: 126;
-    $duration: 1.4s;
-    $color: #F7BA2A;
+    $duration: 1.5s;
+    $color: #20a0ff;
     .spinner {
         position: fixed;
         z-index: 999;
@@ -31,10 +31,10 @@
     }
     @keyframes rotator {
         0% {
-            transform: scale(0.5) rotate(0deg);
+            transform: scale(.5) rotate(0deg);
         }
         100% {
-            transform: scale(0.5) rotate(270deg);
+            transform: scale(.5) rotate(360deg);
         }
     }
 
@@ -51,11 +51,11 @@
         }
         50% {
             stroke-dashoffset: ($offset/2);
-            transform: rotate(135deg);
+            transform: rotate(180deg);
         }
         100% {
             stroke-dashoffset: $offset;
-            transform: rotate(450deg);
+            transform: rotate(360deg);
         }
     }
 </style>
