@@ -123,7 +123,7 @@ export default {
             this.fetchUnmdTopic();
         }else{
             this.editTopic = {
-                id: "",ta
+                id: "",
                 tab: "",
                 title: "",
                 content: ""
