@@ -96,7 +96,7 @@ export default {
             sessionStorage.scrollTop = $(window).scrollTop();
         }
         //这里得滚动条先滚到最上面
-        // $(window).scrollTop(0);
+        $(window).scrollTop(0);
         $(window).off("scroll");
         next();
     },

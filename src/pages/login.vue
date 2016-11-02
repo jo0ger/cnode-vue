@@ -12,7 +12,7 @@
                             <div class="input-area">
                               <el-form ref="form" label-width="80px" @submit.prevent="login">
                                 <el-form-item label="token">
-                                  <el-input v-model="at" :maxlength="36" :minlength='36' placeholder="请输入个人accesstoken..."></el-input>
+                                  <el-input v-model.trim="at" :maxlength="36" :minlength='36' placeholder="请输入个人accesstoken..."></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click.native="goBack" v-if="redirect"><i class="el-icon-caret-left"></i>返回上一页</el-button>

@@ -36,11 +36,15 @@ export default {
         user: 'getUserInfo'
     }),
     watch: {
-        "$route" () {
+        "$route" (to, from) {
             let map = ["index", "api", "about", "login", "personal", "message", "newtopic"];
             this.curPage = map.indexOf(this.$route.name) < 0 ? "other" : this.$route.name; //如果router变化，将curPage转到该router
             if (this.$route.params.name === this.user.loginname) {
                 this.curPage = "personal";
+            }
+            if (this.user.loginname) {
+                this.fetchMessage();
+                this.fetchUserInfo();
             }
         },
         "user" () {
@@ -48,12 +52,6 @@ export default {
                 this.fetchMessage();
                 this.fetchUserInfo();
             }
-        }
-    },
-    created (){
-        if (this.user.loginname) {
-            this.fetchMessage();
-            this.fetchUserInfo();
         }
     },
     methods: {

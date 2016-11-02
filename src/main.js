@@ -9,7 +9,9 @@ import router from "./router";
 import store from "./store";
 
 Vue.use(element);
+
 Vue.config.devtools = true;
+
 Object.keys(filters).forEach((v, i) => {
     Vue.filter(v, filters[v]);
 });

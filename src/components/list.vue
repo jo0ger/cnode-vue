@@ -1,7 +1,7 @@
 <template lang="html">
         <div class="articles">
             <section class="article-list">
-                <article class="topic" v-for="(item, index) in topicstran" v-if="topics" :key="index">
+                <article class="topic" v-for="(item, index) in topics" v-if="topics" :key="index">
                     <router-link :to="{name: 'user', params: {name: item.author.loginname}}" class="creater-avatar avatar">
                         <img :src="item.author.avatar_url" alt="" />
                     </router-link>
@@ -23,20 +23,7 @@
 
 <script>
 export default {
-    data() {
-        return {
-            topicstran: []
-        }
-    },
     props: ["topics", "hideCount"], //hideCount是否隐藏浏览量及回复量，因为在用户主页上api没有返回这两项
-    mounted() {
-        this.topicstran = [].concat(this.topics);
-    },
-    watch: {
-        "topics" () {
-            this.topicstran = [].concat(this.topics);
-        }
-    },
 }
 </script>
 
