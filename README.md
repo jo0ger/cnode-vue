@@ -10,6 +10,7 @@
 * [es6](http://es6.ruanyifeng.com/)
 * [webpack](http://webpack.github.io/)
 * [gulp](http://www.gulpjs.com.cn/)
+* [vsllm](https://vsllm.com)
 
 ## 构建步骤
 
